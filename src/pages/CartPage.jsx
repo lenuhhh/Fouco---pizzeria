@@ -214,7 +214,7 @@ export default function CartPage() {
                       </label>
                       <input
                         className="input-field"
-                        placeholder="вул. Хрещатик 22, Київ"
+                        placeholder="Khreshchatyk St 22, Kyiv"
                         value={form.address}
                         onChange={e => setForm(f => ({ ...f, address: e.target.value }))}
                       />

@@ -5,7 +5,7 @@ import toast from 'react-hot-toast'
 
 const FAQS = [
   { q: 'How long is delivery?', a: 'Usually 25-40 minutes depending on your district. Minimum order for delivery is ₴250.' },
-  { q: 'Can I pick up my order?', a: 'Yes. Pick-up is available at вул. Хрещатик 22, Київ, with no minimum order value.' },
+  { q: 'Can I pick up my order?', a: 'Yes. Pick-up is available at Khreshchatyk St 22, Kyiv, with no minimum order value.' },
   { q: 'Can I customize ingredients?', a: 'Absolutely. Add your preferences during checkout and we will tailor the pizza for you.' },
   { q: 'Are you open on holidays?', a: 'Yes, we are open daily from 11:00 to 23:00, including public holidays.' },
   { q: 'Do you have options for kids?', a: 'Yes, we prepare mini pizzas for kids. Our team can suggest size and toppings.' },
@@ -72,8 +72,8 @@ export default function ContactsPage() {
               {
                 icon: <MapPin size={22} />,
                 title: 'Address',
-                main: 'вул. Хрещатик 22, Київ',
-                sub: 'Центр, 2 хвилини від метро Хрещатик',
+                main: 'Khreshchatyk St 22, Kyiv',
+                sub: 'City centre, 2 min from Khreshchatyk metro',
                 action: 'Route',
               },
               {
@@ -127,15 +127,15 @@ export default function ContactsPage() {
                 <div style={{ display: 'flex', gap: 12, alignItems: 'flex-start' }}>
                   <Train size={16} color="var(--c-fire)" style={{ marginTop: 2, flexShrink: 0 }} />
                   <div>
-                    <div style={{ color: 'var(--c-cream)', fontSize: '0.88rem', fontWeight: 500 }}>Метро Хрещатик</div>
-                    <div style={{ color: 'var(--c-muted)', fontSize: '0.8rem' }}>2 хвилини пішки, вихід 3</div>
+                    <div style={{ color: 'var(--c-cream)', fontSize: '0.88rem', fontWeight: 500 }}>Metro Khreshchatyk</div>
+                    <div style={{ color: 'var(--c-muted)', fontSize: '0.8rem' }}>2 minutes on foot, Exit 3</div>
                   </div>
                 </div>
                 <div style={{ display: 'flex', gap: 12, alignItems: 'flex-start' }}>
                   <Car size={16} color="var(--c-gold)" style={{ marginTop: 2, flexShrink: 0 }} />
                   <div>
                     <div style={{ color: 'var(--c-cream)', fontSize: '0.88rem', fontWeight: 500 }}>Parking</div>
-                    <div style={{ color: 'var(--c-muted)', fontSize: '0.8rem' }}>Безкоштовне паркування у дворі, в'їзд з вул. Прорізної</div>
+                    <div style={{ color: 'var(--c-muted)', fontSize: '0.8rem' }}>Free courtyard parking, entrance from Prorizna St</div>
                   </div>
                 </div>
               </div>
@@ -183,7 +183,7 @@ export default function ContactsPage() {
                       </label>
                       <input
                         className="input-field"
-                        placeholder="Іван Петренко"
+                        placeholder="Ivan Petrenko"
                         value={form.name}
                         onChange={e => setForm({ ...form, name: e.target.value })}
                       />
@@ -249,8 +249,8 @@ export default function ContactsPage() {
               }} />
               <MapPin size={32} color="var(--c-fire)" />
               <div style={{ textAlign: 'center' }}>
-                <div style={{ color: 'var(--c-cream)', fontWeight: 600, marginBottom: 4 }}>вул. Хрещатик 22, Київ</div>
-                <div style={{ color: 'var(--c-muted)', fontSize: '0.85rem' }}>2 хв від метро · Безкоштовне паркування</div>
+                <div style={{ color: 'var(--c-cream)', fontWeight: 600, marginBottom: 4 }}>Khreshchatyk St 22, Kyiv</div>
+                <div style={{ color: 'var(--c-muted)', fontSize: '0.85rem' }}>2 min from metro · Free parking</div>
               </div>
               <a
                 href="https://maps.google.com"

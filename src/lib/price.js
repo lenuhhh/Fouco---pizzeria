@@ -1,8 +1,6 @@
 export function formatEUR(value) {
   const amount = Number(value || 0) / 100
-  return new Intl.NumberFormat('uk-UA', {
-    style: 'currency',
-    currency: 'UAH',
+  return '\u20B4\u202F' + new Intl.NumberFormat('en-US', {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
   }).format(amount)

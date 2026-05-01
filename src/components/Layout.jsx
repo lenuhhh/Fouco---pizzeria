@@ -382,7 +382,7 @@ export default function Layout() {
                 {[
                   { icon: <Phone size={15} />, text: '+38 044 555 01 99', sub: 'Mon-Sun 10:00–23:00' },
                   { icon: <Mail size={15} />, text: 'hello@fuoco.ua', sub: 'Email support' },
-                  { icon: <MapPin size={15} />, text: 'вул. Хрещатик 22, Київ', sub: 'Центр Києва' },
+                  { icon: <MapPin size={15} />, text: 'Khreshchatyk St 22, Kyiv', sub: 'City centre' },
                   { icon: <Clock size={15} />, text: 'Mon-Sun: 11:00-23:00', sub: 'Open every day' },
                 ].map(c => (
                   <div key={c.text} style={{ display: 'flex', alignItems: 'flex-start', gap: 12 }}>
