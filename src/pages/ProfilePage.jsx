@@ -5,10 +5,12 @@ import { User, Phone, MapPin, Edit2, Save, LogOut, ShoppingBag, Settings } from 
 import { supabase } from '../lib/supabase'
 import { useAuthStore } from '../store'
 import toast from 'react-hot-toast'
+import { useT } from '../lib/i18n'
 
 export default function ProfilePage() {
   const navigate = useNavigate()
   const { user, profile, setProfile, logout } = useAuthStore()
+  const t = useT()
   const [editing, setEditing] = useState(false)
   const [saving, setSaving] = useState(false)
   const [form, setForm] = useState({
@@ -33,10 +35,10 @@ export default function ProfilePage() {
       <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', textAlign: 'center', padding: 24 }}>
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
           <div style={{ fontSize: 64, marginBottom: 20 }}>🔐</div>
-          <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '2rem', marginBottom: 12 }}>Authorization required</h2>
-          <p style={{ color: 'var(--c-muted)', marginBottom: 32 }}>Sign in to open your profile</p>
+          <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '2rem', marginBottom: 12 }}>{t('profile_not_auth')}</h2>
+          <p style={{ color: 'var(--c-muted)', marginBottom: 32 }}>{t('profile_not_auth_sub')}</p>
           <button className="btn-primary" onClick={() => navigate('/auth')}>
-            <span style={{ position: 'relative', zIndex: 1 }}>Sign in</span>
+            <span style={{ position: 'relative', zIndex: 1 }}>{t('profile_signin_btn')}</span>
           </button>
         </motion.div>
       </div>
@@ -75,7 +77,7 @@ export default function ProfilePage() {
       <div className="container" style={{ maxWidth: 720 }}>
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} style={{ marginBottom: 40 }}>
           <h1 className="section-title">
-            My <span style={{ color: 'var(--c-fire)', fontStyle: 'italic' }}>profile</span>
+            {t('profile_title1')} <span style={{ color: 'var(--c-fire)', fontStyle: 'italic' }}>{t('profile_title2')}</span>
           </h1>
         </motion.div>
 
@@ -135,7 +137,7 @@ export default function ProfilePage() {
                 className="btn-ghost"
                 style={{ padding: '8px 16px', fontSize: '0.82rem', display: 'flex', alignItems: 'center', gap: 6 }}
               >
-                <Edit2 size={14} /> Edit
+                <Edit2 size={14} /> {t('profile_edit')}
               </button>
             ) : (
               <button
@@ -145,7 +147,7 @@ export default function ProfilePage() {
                 style={{ padding: '8px 16px', fontSize: '0.82rem' }}
               >
                 <span style={{ position: 'relative', zIndex: 1, display: 'flex', alignItems: 'center', gap: 6 }}>
-                  <Save size={14} /> {saving ? 'Saving...' : 'Save'}
+                  <Save size={14} /> {saving ? t('profile_saving') : t('profile_save')}
                 </span>
               </button>
             )}
@@ -153,14 +155,14 @@ export default function ProfilePage() {
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
             {[
-              { icon: <User size={16} />, label: 'Name', key: 'full_name', placeholder: 'Your name' },
-              { icon: <Phone size={16} />, label: 'Phone', key: 'phone', placeholder: '+49 30 5550 1990' },
-              { icon: <MapPin size={16} />, label: 'Address', key: 'address', placeholder: 'Your delivery address' },
+              { icon: <User size={16} />, labelKey: 'profile_name_label', key: 'full_name', placeholder: 'Your name' },
+              { icon: <Phone size={16} />, labelKey: 'profile_phone_label', key: 'phone', placeholder: '+38 044 555 01 99' },
+              { icon: <MapPin size={16} />, labelKey: 'profile_address_label', key: 'address', placeholder: 'Your delivery address' },
             ].map(field => (
               <div key={field.key}>
                 <label style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 8, fontSize: '0.82rem', fontWeight: 500, color: 'var(--c-muted)' }}>
                   <span style={{ color: 'var(--c-fire)' }}>{field.icon}</span>
-                  {field.label}
+                  {t(field.labelKey)}
                 </label>
                 {editing ? (
                   <input
@@ -195,7 +197,7 @@ export default function ProfilePage() {
             onClick={() => navigate('/orders')}
             style={{ display: 'flex', alignItems: 'center', gap: 8, flex: 1, justifyContent: 'center', padding: '14px' }}
           >
-            <ShoppingBag size={16} /> My orders
+            <ShoppingBag size={16} /> {t('profile_orders_btn')}
           </button>
           <button
             onClick={handleLogout}
@@ -208,7 +210,7 @@ export default function ProfilePage() {
             onMouseEnter={e => { e.currentTarget.style.background = 'rgba(239,68,68,0.15)' }}
             onMouseLeave={e => { e.currentTarget.style.background = 'rgba(239,68,68,0.08)' }}
           >
-            <LogOut size={16} /> Sign out
+            <LogOut size={16} /> {t('profile_logout')}
           </button>
         </motion.div>
       </div>

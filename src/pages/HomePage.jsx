@@ -6,9 +6,11 @@ import { supabase } from '../lib/supabase'
 import { MOCK_PRODUCTS } from '../lib/mockData'
 import ProductCard from '../components/ProductCard'
 import { optimizeImageUrl } from '../lib/image'
+import { useT } from '../lib/i18n'
 
 export default function HomePage() {
   const navigate = useNavigate()
+  const t = useT()
   const [popular, setPopular] = useState([])
   const [isCompactMotion, setIsCompactMotion] = useState(() =>
     typeof window !== 'undefined' ? window.innerWidth < 992 : false
@@ -91,7 +93,7 @@ export default function HomePage() {
               style={{ marginBottom: 24 }}
             >
               <span className="tag tag-fire" style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
-                <Flame size={12} fill="currentColor" /> Open now · 11:00 - 23:00
+                <Flame size={12} fill="currentColor" /> {t('home_tag')}
               </span>
             </motion.div>
 
@@ -108,11 +110,11 @@ export default function HomePage() {
                 marginBottom: 28,
               }}
             >
-              Real
+              {t('home_hero_title1')}
               <br />
-              <span style={{ color: 'var(--c-fire)', fontStyle: 'italic' }}>Italian</span>
+              <span style={{ color: 'var(--c-fire)', fontStyle: 'italic' }}>{t('home_hero_title2')}</span>
               <br />
-              pizza
+              {t('home_hero_title3')}
             </motion.h1>
 
             <motion.p
@@ -121,7 +123,7 @@ export default function HomePage() {
               transition={{ duration: 0.8, delay: 0.4 }}
               style={{ fontSize: '1.1rem', color: 'var(--c-muted)', maxWidth: 560, lineHeight: 1.8, marginBottom: 34 }}
             >
-              Wood-fired at 485°C. Fresh ingredients, classic recipes, and fast delivery in around 30 minutes.
+              {t('home_hero_sub')}
             </motion.p>
 
             <motion.div
@@ -132,11 +134,11 @@ export default function HomePage() {
             >
               <button className="btn-primary" onClick={() => navigate('/menu')} style={{ padding: '14px 32px', fontSize: '1rem' }}>
                 <span style={{ display: 'flex', alignItems: 'center', gap: 8, position: 'relative', zIndex: 1 }}>
-                  View menu <ArrowRight size={18} />
+                  {t('home_menu_btn')} <ArrowRight size={18} />
                 </span>
               </button>
               <button className="btn-ghost" onClick={() => navigate('/menu')} style={{ padding: '14px 28px', fontSize: '1rem' }}>
-                Order now
+                {t('home_order_btn')}
               </button>
             </motion.div>
 
@@ -207,10 +209,10 @@ export default function HomePage() {
         <div className="container">
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: 2 }}>
             {[
-              { icon: <Flame size={22} />, title: 'Wood-fired oven', desc: 'Baked at 485°C for a perfect crust' },
-              { icon: <Clock size={22} />, title: 'Fast delivery', desc: 'Hot pizza at your door in about 30 min' },
-              { icon: <Shield size={22} />, title: 'Fresh produce', desc: 'Ingredients delivered daily' },
-              { icon: <Truck size={22} />, title: 'Free delivery', desc: 'For orders over €10.00' },
+              { icon: <Flame size={22} />, title: t('home_feat1_title'), desc: t('home_feat1_desc') },
+              { icon: <Clock size={22} />, title: t('home_feat2_title'), desc: t('home_feat2_desc') },
+              { icon: <Shield size={22} />, title: t('home_feat3_title'), desc: t('home_feat3_desc') },
+              { icon: <Truck size={22} />, title: t('home_feat2_title'), desc: t('footer_delivery') },
             ].map((f, i) => (
               <motion.div
                 key={i}
@@ -252,15 +254,15 @@ export default function HomePage() {
               <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
                 <Star size={14} color="var(--c-gold)" fill="var(--c-gold)" />
                 <span style={{ color: 'var(--c-gold)', fontSize: '0.8rem', fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase' }}>
-                  Best sellers
+                  {t('home_popular_tag')}
                 </span>
               </div>
-              <h2 className="section-title">Guest favorites</h2>
+              <h2 className="section-title">{t('home_popular_title1')} <span style={{ color: 'var(--c-fire)', fontStyle: 'italic' }}>{t('home_popular_title2')}</span></h2>
             </div>
             <button className="btn-ghost" onClick={() => navigate('/menu')}
               style={{ display: 'flex', alignItems: 'center', gap: 8 }}
             >
-              Full menu <ArrowRight size={16} />
+              {t('home_see_all')} <ArrowRight size={16} />
             </button>
           </motion.div>
 

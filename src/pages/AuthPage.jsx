@@ -4,12 +4,14 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { Flame, Mail, Lock, User, ArrowRight, Eye, EyeOff } from 'lucide-react'
 import { supabase, IS_DEMO } from '../lib/supabase'
 import { useAuthStore } from '../store'
+import { useT } from '../lib/i18n'
 import toast from 'react-hot-toast'
 
 export default function AuthPage() {
   const navigate = useNavigate()
   const user = useAuthStore(s => s.user)
   const setUser = useAuthStore(s => s.setUser)
+  const t = useT()
   const [mode, setMode] = useState('login') // 'login' | 'register'
   const [showPw, setShowPw] = useState(false)
   const [loading, setLoading] = useState(false)
@@ -47,7 +49,7 @@ export default function AuthPage() {
         }
 
         if (data?.user) setUser(data.user)
-        toast.success('Account created! Welcome to Fuoco 🔥')
+        toast.success(t('auth_register_btn') + '! 🔥')
         navigate('/profile')
       } else {
         const { data, error } = await supabase.auth.signInWithPassword({
@@ -56,14 +58,14 @@ export default function AuthPage() {
         })
         if (error) throw error
         if (data?.user) setUser(data.user)
-        toast.success('Welcome back!')
+        toast.success(t('nav_home') === 'Головна' ? 'З поверненням!' : 'Welcome back!')
         navigate('/profile')
       }
     } catch (err) {
-      const msg = err.message.includes('Invalid login') ? 'Incorrect email or password'
-        : err.message.includes('already registered') ? 'This email is already registered'
-        : err.message.includes('Password should be') ? 'Password must be at least 6 characters'
-        : err.message.toLowerCase().includes('email not confirmed') ? 'Email not confirmed. Please confirm email first.'
+      const msg = err.message.includes('Invalid login') ? t('auth_err_invalid')
+        : err.message.includes('already registered') ? t('auth_err_exists')
+        : err.message.includes('Password should be') ? t('auth_err_password')
+        : err.message.toLowerCase().includes('email not confirmed') ? t('auth_err_confirm')
         : err.message
       if (msg.toLowerCase().includes('email not confirmed')) {
         setNeedsEmailConfirm(true)
@@ -138,8 +140,7 @@ export default function AuthPage() {
               fontSize: '0.82rem',
               lineHeight: 1.6,
             }}>
-              Demo mode is currently enabled. To use real signup and login with Supabase, set
-              `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` in `.env`, then restart the dev server.
+              {t('auth_demo_notice')}
             </div>
           )}
 
@@ -148,7 +149,7 @@ export default function AuthPage() {
             display: 'flex', background: 'var(--c-bg3)', borderRadius: 50,
             padding: 4, marginBottom: 32,
           }}>
-            {[['login', 'Sign in'], ['register', 'Register']].map(([m, label]) => (
+            {[['login', t('auth_signin_tab')], ['register', t('auth_register_tab')]].map(([m, label]) => (
               <button
                 key={m}
                 onClick={() => {
@@ -179,7 +180,7 @@ export default function AuthPage() {
                     <User size={16} style={{ position: 'absolute', left: 16, top: '50%', transform: 'translateY(-50%)', color: 'var(--c-muted)' }} />
                     <input
                       className="input-field"
-                      placeholder="Your name"
+                      placeholder={t('auth_name_placeholder')}
                       value={form.name}
                       onChange={e => setForm(f => ({ ...f, name: e.target.value }))}
                       style={{ paddingLeft: 46 }}
@@ -194,7 +195,7 @@ export default function AuthPage() {
               <input
                 className="input-field"
                 type="email"
-                placeholder="Email"
+                placeholder={t('auth_email_placeholder')}
                 value={form.email}
                 required
                 onChange={e => setForm(f => ({ ...f, email: e.target.value }))}
@@ -207,7 +208,7 @@ export default function AuthPage() {
               <input
                 className="input-field"
                 type={showPw ? 'text' : 'password'}
-                placeholder="Password"
+                placeholder={t('auth_password_placeholder')}
                 value={form.password}
                 required
                 onChange={e => setForm(f => ({ ...f, password: e.target.value }))}
@@ -247,7 +248,7 @@ export default function AuthPage() {
               style={{ width: '100%', justifyContent: 'center', padding: '14px', fontSize: '0.95rem', opacity: loading ? 0.7 : 1, marginTop: 8 }}
             >
               <span style={{ position: 'relative', zIndex: 1, display: 'flex', alignItems: 'center', gap: 8 }}>
-                {loading ? 'Please wait...' : (mode === 'login' ? 'Sign in' : 'Create account')}
+                {loading ? t('auth_loading') : (mode === 'login' ? t('auth_signin_btn') : t('auth_register_btn'))}
                 {!loading && <ArrowRight size={16} />}
               </span>
             </motion.button>
@@ -260,17 +261,25 @@ export default function AuthPage() {
                 disabled={resendLoading}
                 style={{ width: '100%', justifyContent: 'center', padding: '12px', fontSize: '0.88rem' }}
               >
-                {resendLoading ? 'Sending...' : 'Resend confirmation email'}
+                {resendLoading ? t('auth_loading') : t('auth_resend')}
               </button>
             )}
           </form>
 
           {mode === 'login' && (
             <p style={{ textAlign: 'center', marginTop: 20, fontSize: '0.82rem', color: 'var(--c-muted)' }}>
-              No account yet?{' '}
+              {t('auth_no_account')}{' '}
               <span style={{ color: 'var(--c-fire2)', cursor: 'pointer', fontWeight: 600 }}
                 onClick={() => setMode('register')}
-              >Create one</span>
+              >{t('auth_create_one')}</span>
+            </p>
+          )}
+          {mode === 'register' && (
+            <p style={{ textAlign: 'center', marginTop: 20, fontSize: '0.82rem', color: 'var(--c-muted)' }}>
+              {t('auth_have_account')}{' '}
+              <span style={{ color: 'var(--c-fire2)', cursor: 'pointer', fontWeight: 600 }}
+                onClick={() => setMode('login')}
+              >{t('auth_sign_in_link')}</span>
             </p>
           )}
         </div>

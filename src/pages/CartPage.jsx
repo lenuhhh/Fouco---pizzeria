@@ -7,11 +7,13 @@ import { supabase } from '../lib/supabase'
 import toast from 'react-hot-toast'
 import { formatEUR } from '../lib/price'
 import { optimizeImageUrl } from '../lib/image'
+import { useT } from '../lib/i18n'
 
 export default function CartPage() {
   const navigate = useNavigate()
   const { items, updateQty, removeItem, clearCart, total, count } = useCartStore()
   const user = useAuthStore(s => s.user)
+  const t = useT()
   const [step, setStep] = useState(1) // 1=cart 2=checkout 3=done
   const [loading, setLoading] = useState(false)
   const [form, setForm] = useState({ address: '', phone: '', comment: '' })
@@ -75,22 +77,22 @@ export default function CartPage() {
             style={{ fontSize: 80, marginBottom: 24 }}
           >🎉</motion.div>
           <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '2.5rem', fontWeight: 800, marginBottom: 16 }}>
-            Order confirmed!
+            {t('cart_order_done_title')}
           </h2>
           <p style={{ color: 'var(--c-muted)', marginBottom: 8, fontSize: '1.05rem' }}>
-            Your pizza is already in the oven.
+            {t('cart_order_done_sub')}
           </p>
           <p style={{ color: 'var(--c-muted)', fontSize: '0.88rem', marginBottom: 40 }}>
-            Delivery estimate: around 30 minutes.
+            {t('cart_order_done_hint')}
           </p>
           <div style={{ display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap' }}>
             <button className="btn-primary" onClick={() => navigate('/orders')}>
               <span style={{ position: 'relative', zIndex: 1, display: 'flex', alignItems: 'center', gap: 8 }}>
-                My orders <ArrowRight size={16} />
+                {t('cart_track_btn')} <ArrowRight size={16} />
               </span>
             </button>
             <button className="btn-ghost" onClick={() => navigate('/menu')}>
-              Order more
+              {t('nav_menu')}
             </button>
           </div>
         </motion.div>
@@ -111,13 +113,13 @@ export default function CartPage() {
             onClick={() => step === 1 ? navigate('/menu') : setStep(1)}
             style={{ display: 'flex', alignItems: 'center', gap: 8, color: 'var(--c-muted)', marginBottom: 20, fontSize: '0.9rem' }}
           >
-            <ArrowLeft size={16} /> {step === 1 ? 'Continue shopping' : 'Back to cart'}
+            <ArrowLeft size={16} /> {step === 1 ? t('cart_go_menu') : t('cart_back')}
           </button>
           <h1 className="section-title">
-            {step === 1 ? 'Cart' : 'Checkout'}
+            {step === 1 ? t('cart_title') : t('cart_checkout_title')}
           </h1>
           {count() > 0 && step === 1 && (
-            <p style={{ color: 'var(--c-muted)', marginTop: 8 }}>{count()} items</p>
+            <p style={{ color: 'var(--c-muted)', marginTop: 8 }}>{count()} {t('cart_items')}</p>
           )}
         </motion.div>
 
@@ -128,10 +130,10 @@ export default function CartPage() {
             style={{ textAlign: 'center', padding: '80px 0' }}
           >
             <div style={{ fontSize: 72, marginBottom: 20 }}>🛒</div>
-            <h3 style={{ fontFamily: 'var(--font-display)', fontSize: '1.8rem', marginBottom: 12 }}>Your cart is empty</h3>
-            <p style={{ color: 'var(--c-muted)', marginBottom: 32 }}>Add something delicious</p>
+            <h3 style={{ fontFamily: 'var(--font-display)', fontSize: '1.8rem', marginBottom: 12 }}>{t('cart_empty')}</h3>
+            <p style={{ color: 'var(--c-muted)', marginBottom: 32 }}>{t('cart_empty_sub')}</p>
             <button className="btn-primary" onClick={() => navigate('/menu')}>
-              <span style={{ position: 'relative', zIndex: 1 }}>Open menu</span>
+              <span style={{ position: 'relative', zIndex: 1 }}>{t('cart_go_menu')}</span>
             </button>
           </motion.div>
         ) : (
@@ -205,12 +207,12 @@ export default function CartPage() {
                   style={{ background: 'var(--c-surface)', borderRadius: 'var(--r-lg)', border: '1px solid var(--c-border)', padding: 32 }}
                 >
                   <h3 style={{ fontFamily: 'var(--font-display)', fontSize: '1.4rem', fontWeight: 700, marginBottom: 24 }}>
-                    Delivery details
+                    {t('cart_checkout_title')}
                   </h3>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
                     <div>
                       <label style={{ display: 'block', marginBottom: 8, fontWeight: 500, fontSize: '0.88rem', color: 'var(--c-muted)' }}>
-                        Delivery address *
+                        {t('cart_address_label')}
                       </label>
                       <input
                         className="input-field"
@@ -221,22 +223,22 @@ export default function CartPage() {
                     </div>
                     <div>
                       <label style={{ display: 'block', marginBottom: 8, fontWeight: 500, fontSize: '0.88rem', color: 'var(--c-muted)' }}>
-                        Phone *
+                        {t('cart_phone_label')}
                       </label>
                       <input
                         className="input-field"
-                        placeholder="+49 30 5550 1990"
+                        placeholder="+38 044 555 01 99"
                         value={form.phone}
                         onChange={e => setForm(f => ({ ...f, phone: e.target.value }))}
                       />
                     </div>
                     <div>
                       <label style={{ display: 'block', marginBottom: 8, fontWeight: 500, fontSize: '0.88rem', color: 'var(--c-muted)' }}>
-                        Comment
+                        {t('cart_comment_label')}
                       </label>
                       <textarea
                         className="input-field"
-                        placeholder="Order notes..."
+                        placeholder={t('cart_comment_placeholder')}
                         value={form.comment}
                         onChange={e => setForm(f => ({ ...f, comment: e.target.value }))}
                         style={{ resize: 'vertical', minHeight: 100 }}
@@ -259,7 +261,7 @@ export default function CartPage() {
               }}
             >
               <h3 style={{ fontFamily: 'var(--font-display)', fontSize: '1.2rem', fontWeight: 700, marginBottom: 20 }}>
-                Your order
+                {t('cart_your_order')}
               </h3>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 20 }}>
                 {items.map(item => (
@@ -271,22 +273,22 @@ export default function CartPage() {
               </div>
               <div style={{ borderTop: '1px solid var(--c-border)', paddingTop: 16, marginBottom: 16 }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8, fontSize: '0.9rem' }}>
-                  <span style={{ color: 'var(--c-muted)' }}>Subtotal</span>
+                  <span style={{ color: 'var(--c-muted)' }}>{t('cart_subtotal')}</span>
                   <span>{formatEUR(total())}</span>
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 16, fontSize: '0.9rem' }}>
-                  <span style={{ color: 'var(--c-muted)' }}>Delivery</span>
+                  <span style={{ color: 'var(--c-muted)' }}>{t('cart_delivery')}</span>
                   <span style={{ color: deliveryFee === 0 ? '#4caf50' : 'var(--c-text)' }}>
-                    {deliveryFee === 0 ? 'Free' : formatEUR(deliveryFee)}
+                    {deliveryFee === 0 ? t('cart_delivery_free') : formatEUR(deliveryFee)}
                   </span>
                 </div>
                 {deliveryFee > 0 && (
                   <p style={{ fontSize: '0.78rem', color: 'var(--c-muted)', marginBottom: 12 }}>
-                    Add {formatEUR(1000 - total())} more for free delivery
+                    {t('cart_delivery_hint').replace('{amount}', formatEUR(1000 - total()))}
                   </p>
                 )}
                 <div style={{ display: 'flex', justifyContent: 'space-between', fontWeight: 800, fontSize: '1.2rem' }}>
-                  <span style={{ fontFamily: 'var(--font-display)' }}>Total</span>
+                  <span style={{ fontFamily: 'var(--font-display)' }}>{t('cart_total')}</span>
                   <span style={{ color: 'var(--c-gold2)' }}>{formatEUR(finalTotal)}</span>
                 </div>
               </div>
@@ -298,7 +300,7 @@ export default function CartPage() {
                   style={{ width: '100%', justifyContent: 'center', padding: '14px', fontSize: '0.95rem' }}
                 >
                   <span style={{ position: 'relative', zIndex: 1, display: 'flex', alignItems: 'center', gap: 8 }}>
-                    <ShoppingBag size={16} /> Proceed to checkout
+                    <ShoppingBag size={16} /> {t('cart_continue')}
                   </span>
                 </button>
               ) : (
@@ -309,14 +311,14 @@ export default function CartPage() {
                   style={{ width: '100%', justifyContent: 'center', padding: '14px', fontSize: '0.95rem', opacity: loading ? 0.7 : 1 }}
                 >
                   <span style={{ position: 'relative', zIndex: 1, display: 'flex', alignItems: 'center', gap: 8 }}>
-                    {loading ? 'Placing order...' : `Pay ${formatEUR(finalTotal)}`}
+                    {loading ? t('cart_placing') : t('cart_place_btn').replace('{amount}', formatEUR(finalTotal))}
                   </span>
                 </button>
               )}
 
               {!user && (
                 <p style={{ marginTop: 12, fontSize: '0.8rem', color: 'var(--c-muted)', textAlign: 'center' }}>
-                  Please <span style={{ color: 'var(--c-fire2)', cursor: 'pointer' }} onClick={() => navigate('/auth')}>sign in</span> to place an order
+                  {t('cart_signin_required')}
                 </p>
               )}
             </motion.div>

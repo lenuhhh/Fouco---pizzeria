@@ -5,8 +5,9 @@ import {
   ShoppingCart, User, Menu, X, Flame, MapPin, Phone, Mail,
   Clock, Instagram, Send, ChevronRight, Heart
 } from 'lucide-react'
-import { useCartStore, useAuthStore } from '../store'
+import { useCartStore, useAuthStore, useLangStore } from '../store'
 import { supabase, IS_DEMO } from '../lib/supabase'
+import { useT } from '../lib/i18n'
 import toast from 'react-hot-toast'
 
 export default function Layout() {
@@ -18,6 +19,8 @@ export default function Layout() {
   const navigate = useNavigate()
   const count = useCartStore(s => s.count())
   const user = useAuthStore(s => s.user)
+  const { lang, setLang } = useLangStore()
+  const t = useT()
 
   useEffect(() => {
     const onScroll = () => {
@@ -60,15 +63,15 @@ export default function Layout() {
 
   async function handleLogout() {
     await supabase.auth.signOut()
-    toast.success('Signed out successfully!')
+    toast.success(lang === 'uk' ? 'Ви вийшли!' : 'Signed out successfully!')
     navigate('/')
   }
 
   const navLinks = [
-    { to: '/', label: 'Home' },
-    { to: '/menu', label: 'Menu' },
-    { to: '/contacts', label: 'Contact' },
-    { to: '/orders', label: 'Orders' },
+    { to: '/', label: t('nav_home') },
+    { to: '/menu', label: t('nav_menu') },
+    { to: '/contacts', label: t('nav_contact') },
+    { to: '/orders', label: t('nav_orders') },
   ]
 
   return (
@@ -154,6 +157,19 @@ export default function Layout() {
 
           {/* Actions */}
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            {/* Lang toggle */}
+            <motion.button
+              whileTap={{ scale: 0.95 }}
+              onClick={() => setLang(lang === 'en' ? 'uk' : 'en')}
+              style={{
+                padding: '6px 14px', borderRadius: 50, fontSize: '0.78rem', fontWeight: 700,
+                background: 'rgba(212,160,71,0.1)', border: '1px solid rgba(212,160,71,0.25)',
+                color: 'var(--c-gold2)', letterSpacing: '0.04em', cursor: 'pointer',
+              }}
+            >
+              {lang === 'en' ? 'УК' : 'EN'}
+            </motion.button>
+
             <motion.button
               whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}
               onClick={() => navigate('/cart')}
@@ -165,7 +181,7 @@ export default function Layout() {
               }}
             >
               <ShoppingCart size={18} />
-              <span className="desktop-nav">Cart</span>
+              <span className="desktop-nav">{t('nav_cart')}</span>
               {count > 0 && (
                 <motion.span className="badge" initial={{ scale: 0 }} animate={{ scale: 1 }}
                   style={{ position: 'absolute', top: -6, right: -6 }}>
@@ -188,7 +204,7 @@ export default function Layout() {
               <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}
                 onClick={() => navigate('/auth')} className="btn-ghost"
                 style={{ padding: '8px 18px', fontSize: '0.88rem' }}>
-                Sign in
+                {t('nav_signin')}
               </motion.button>
             )}
 
@@ -237,15 +253,15 @@ export default function Layout() {
           {user ? (
             <>
               <button onClick={() => navigate('/profile')} className="btn-ghost" style={{ flex: 1, justifyContent: 'center' }}>
-                <User size={16} /><span>Profile</span>
+                <User size={16} /><span>{t('nav_profile')}</span>
               </button>
               <button onClick={handleLogout} className="btn-ghost" style={{ flex: 1, justifyContent: 'center', color: 'var(--c-muted)' }}>
-                Sign out
+                {t('nav_signout')}
               </button>
             </>
           ) : (
             <button onClick={() => navigate('/auth')} className="btn-primary" style={{ flex: 1, justifyContent: 'center' }}>
-              <span>Sign in</span>
+              <span>{t('nav_signin')}</span>
             </button>
           )}
         </div>
@@ -268,22 +284,22 @@ export default function Layout() {
           <div className="container footer-newsletter">
             <div>
               <h3 style={{ fontFamily: 'var(--font-display)', fontSize: '1.4rem', fontWeight: 700, marginBottom: 6 }}>
-                Get <span style={{ color: 'var(--c-fire)' }}>10%</span> off your first order
+                {t('footer_newsletter_title')}
               </h3>
-              <p style={{ color: 'var(--c-muted)', fontSize: '0.88rem' }}>Sign up and receive your personal promo code</p>
+              <p style={{ color: 'var(--c-muted)', fontSize: '0.88rem' }}>{t('footer_newsletter_sub')}</p>
             </div>
             <div className="footer-newsletter-form">
               <input
                 className="input-field footer-newsletter-input"
-                placeholder="Your email"
+                placeholder={t('footer_newsletter_placeholder')}
                 style={{ borderColor: 'rgba(232,66,10,0.2)' }}
               />
               <button
                 className="btn-primary footer-newsletter-btn"
                 style={{ whiteSpace: 'nowrap' }}
-                onClick={() => toast.success('Welcome! Your discount is active.')}
+                onClick={() => toast.success(lang === 'uk' ? 'Вітаємо! Ваша знижка активована.' : 'Welcome! Your discount is active.')}
               >
-                <span style={{ position: 'relative', zIndex: 1 }}>Claim</span>
+                <span style={{ position: 'relative', zIndex: 1 }}>{t('footer_newsletter_btn')}</span>
               </button>
             </div>
           </div>
@@ -301,7 +317,7 @@ export default function Layout() {
                 </span>
               </div>
               <p style={{ color: 'var(--c-muted)', fontSize: '0.88rem', lineHeight: 1.9, marginBottom: 24 }}>
-                Italian pizza crafted with traditional recipes. Baked in a wood-fired oven at 485°C, inspired by classic Neapolitan style.
+                {t('footer_tagline')}
               </p>
               {/* Social */}
               <div style={{ display: 'flex', gap: 10 }}>
@@ -328,14 +344,14 @@ export default function Layout() {
             {/* Menu links */}
             <div>
               <h4 style={{ fontWeight: 700, marginBottom: 20, color: 'var(--c-cream)', fontSize: '0.9rem', letterSpacing: '0.06em', textTransform: 'uppercase' }}>
-                Menu
+                {t('footer_menu')}
               </h4>
               {[
-                { label: 'Pizza', to: '/menu' },
-                { label: 'Pasta', to: '/menu' },
-                { label: 'Starters', to: '/menu' },
-                { label: 'Desserts', to: '/menu' },
-                { label: 'Drinks', to: '/menu' },
+                { label: t('menu_cat_pizza'), to: '/menu' },
+                { label: t('menu_cat_pasta'), to: '/menu' },
+                { label: t('menu_cat_starters'), to: '/menu' },
+                { label: t('menu_cat_desserts'), to: '/menu' },
+                { label: t('menu_cat_drinks'), to: '/menu' },
               ].map(item => (
                 <Link key={item.label} to={item.to}>
                   <motion.div whileHover={{ x: 4 }}
@@ -352,14 +368,14 @@ export default function Layout() {
             {/* Company */}
             <div>
               <h4 style={{ fontWeight: 700, marginBottom: 20, color: 'var(--c-cream)', fontSize: '0.9rem', letterSpacing: '0.06em', textTransform: 'uppercase' }}>
-                Company
+                {t('footer_company')}
               </h4>
               {[
-                { label: 'About us', to: '/' },
-                { label: 'Contact', to: '/contacts' },
-                { label: 'Promotions', to: '/menu' },
-                { label: 'Delivery', to: '/contacts' },
-                { label: 'Site Structure', to: '/sitemap' },
+                { label: t('footer_about'), to: '/' },
+                { label: t('footer_contact_link'), to: '/contacts' },
+                { label: t('footer_promotions'), to: '/menu' },
+                { label: t('footer_delivery'), to: '/contacts' },
+                { label: t('footer_sitemap'), to: '/sitemap' },
               ].map(item => (
                 <Link key={item.label} to={item.to}>
                   <motion.div whileHover={{ x: 4 }}
@@ -376,14 +392,14 @@ export default function Layout() {
             {/* Contacts */}
             <div>
               <h4 style={{ fontWeight: 700, marginBottom: 20, color: 'var(--c-cream)', fontSize: '0.9rem', letterSpacing: '0.06em', textTransform: 'uppercase' }}>
-                Contact
+                {t('footer_contact')}
               </h4>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
                 {[
-                  { icon: <Phone size={15} />, text: '+38 044 555 01 99', sub: 'Mon-Sun 10:00–23:00' },
-                  { icon: <Mail size={15} />, text: 'hello@fuoco.ua', sub: 'Email support' },
-                  { icon: <MapPin size={15} />, text: 'Khreshchatyk St 22, Kyiv', sub: 'City centre' },
-                  { icon: <Clock size={15} />, text: 'Mon-Sun: 11:00-23:00', sub: 'Open every day' },
+                  { icon: <Phone size={15} />, text: '+38 044 555 01 99', sub: t('footer_phone_sub') },
+                  { icon: <Mail size={15} />, text: 'hello@fuoco.ua', sub: t('footer_email_sub') },
+                  { icon: <MapPin size={15} />, text: 'Khreshchatyk St 22, Kyiv', sub: t('footer_address_sub') },
+                  { icon: <Clock size={15} />, text: t('footer_hours_main'), sub: t('footer_hours_sub') },
                 ].map(c => (
                   <div key={c.text} style={{ display: 'flex', alignItems: 'flex-start', gap: 12 }}>
                     <div style={{
@@ -405,13 +421,13 @@ export default function Layout() {
           {/* Bottom row */}
           <div className="footer-bottom">
             <p style={{ color: 'var(--c-muted)', fontSize: '0.82rem' }}>
-              © 2024 Fuoco. All rights reserved.
+              {t('footer_rights')}
             </p>
             <p style={{ color: 'var(--c-muted)', fontSize: '0.82rem', display: 'flex', alignItems: 'center', gap: 4 }}>
-              Made with <Heart size={12} fill="var(--c-fire)" color="var(--c-fire)" /> in Italy
+              {t('footer_made')} <Heart size={12} fill="var(--c-fire)" color="var(--c-fire)" /> {t('footer_made_in')}
             </p>
             <div style={{ display: 'flex', gap: 20 }}>
-              {['Privacy Policy', 'Terms of Service'].map(link => (
+              {[t('footer_privacy'), t('footer_terms')].map(link => (
                 <span key={link} style={{ color: 'var(--c-muted)', fontSize: '0.78rem', cursor: 'pointer', transition: 'color 0.2s' }}
                   onMouseEnter={e => e.target.style.color = 'var(--c-fire)'}
                   onMouseLeave={e => e.target.style.color = 'var(--c-muted)'}

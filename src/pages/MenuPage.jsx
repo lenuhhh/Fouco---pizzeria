@@ -4,14 +4,15 @@ import { Search, SlidersHorizontal } from 'lucide-react'
 import { supabase } from '../lib/supabase'
 import { MOCK_PRODUCTS } from '../lib/mockData'
 import ProductCard from '../components/ProductCard'
+import { useT } from '../lib/i18n'
 
 const CATEGORIES = [
-  { id: 'all', label: 'All', emoji: '🍽️' },
-  { id: 'pizza', label: 'Pizza', emoji: '🍕' },
-  { id: 'pasta', label: 'Pasta', emoji: '🍝' },
-  { id: 'starters', label: 'Starters', emoji: '🥗' },
-  { id: 'desserts', label: 'Desserts', emoji: '🍰' },
-  { id: 'drinks', label: 'Drinks', emoji: '🥤' },
+  { id: 'all', emoji: '🍽️', labelKey: 'menu_cat_all' },
+  { id: 'pizza', emoji: '🍕', labelKey: 'menu_cat_pizza' },
+  { id: 'pasta', emoji: '🍝', labelKey: 'menu_cat_pasta' },
+  { id: 'starters', emoji: '🥗', labelKey: 'menu_cat_starters' },
+  { id: 'desserts', emoji: '🍰', labelKey: 'menu_cat_desserts' },
+  { id: 'drinks', emoji: '🥤', labelKey: 'menu_cat_drinks' },
 ]
 
 export default function MenuPage() {
@@ -20,6 +21,7 @@ export default function MenuPage() {
   const [category, setCategory] = useState('all')
   const [search, setSearch] = useState('')
   const [sort, setSort] = useState('popular')
+  const t = useT()
 
   useEffect(() => {
     fetchProducts()
@@ -66,9 +68,9 @@ export default function MenuPage() {
             animate={{ opacity: 1, y: 0 }}
           >
             <h1 className="section-title" style={{ marginBottom: 8 }}>
-              Our <span style={{ color: 'var(--c-fire)', fontStyle: 'italic' }}>menu</span>
+              {t('menu_title1')} <span style={{ color: 'var(--c-fire)', fontStyle: 'italic' }}>{t('menu_title2')}</span>
             </h1>
-            <p style={{ color: 'var(--c-muted)' }}>Cooked fresh with care every day</p>
+            <p style={{ color: 'var(--c-muted)' }}>{t('menu_sub')}</p>
           </motion.div>
         </div>
       </div>
@@ -80,7 +82,7 @@ export default function MenuPage() {
             <Search size={16} style={{ position: 'absolute', left: 16, top: '50%', transform: 'translateY(-50%)', color: 'var(--c-muted)' }} />
             <input
               className="input-field"
-              placeholder="Search the menu..."
+              placeholder={t('menu_search_placeholder')}
               value={search}
               onChange={e => setSearch(e.target.value)}
               style={{ paddingLeft: 46 }}
@@ -94,9 +96,9 @@ export default function MenuPage() {
               onChange={e => setSort(e.target.value)}
               style={{ paddingLeft: 42, paddingRight: 16, appearance: 'none', minWidth: 180, cursor: 'pointer' }}
             >
-              <option value="popular">Most popular</option>
-              <option value="price_asc">Price: low to high</option>
-              <option value="price_desc">Price: high to low</option>
+              <option value="popular">{t('menu_sort_popular')}</option>
+              <option value="price_asc">{t('menu_sort_price_asc')}</option>
+              <option value="price_desc">{t('menu_sort_price_desc')}</option>
             </select>
           </div>
         </div>
@@ -121,7 +123,7 @@ export default function MenuPage() {
                 transition: 'all 0.2s',
               }}
             >
-              <span>{cat.emoji}</span> {cat.label}
+              <span>{cat.emoji}</span> {t(cat.labelKey)}
             </motion.button>
           ))}
         </div>
@@ -138,8 +140,8 @@ export default function MenuPage() {
             style={{ textAlign: 'center', padding: '80px 0', color: 'var(--c-muted)' }}
           >
             <div style={{ fontSize: 64, marginBottom: 16 }}>🔍</div>
-            <p style={{ fontSize: '1.1rem' }}>Nothing found</p>
-            <p style={{ fontSize: '0.88rem', marginTop: 8 }}>Try a different search query</p>
+            <p style={{ fontSize: '1.1rem' }}>{t('menu_empty')}</p>
+            <p style={{ fontSize: '0.88rem', marginTop: 8 }}>{t('menu_empty_sub')}</p>
           </motion.div>
         ) : (
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 24 }}>

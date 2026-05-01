@@ -34,3 +34,13 @@ export const useAuthStore = create((set) => ({
   setProfile: (profile) => set({ profile }),
   logout: () => set({ user: null, profile: null }),
 }))
+
+export const useLangStore = create(
+  persist(
+    (set) => ({
+      lang: 'en',
+      setLang: (lang) => set({ lang }),
+    }),
+    { name: 'fuoco-lang' }
+  )
+)

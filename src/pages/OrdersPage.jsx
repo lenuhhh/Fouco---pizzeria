@@ -5,19 +5,21 @@ import { ChevronDown, ChevronUp, Clock, CheckCircle, Truck, XCircle, ChefHat, Pa
 import { supabase } from '../lib/supabase'
 import { useAuthStore } from '../store'
 import { formatEUR } from '../lib/price'
+import { useT } from '../lib/i18n'
 
 const STATUS_CONFIG = {
-  pending:     { label: 'Pending', color: '#f59e0b', icon: Clock, bg: 'rgba(245,158,11,0.12)' },
-  confirmed:   { label: 'Confirmed', color: '#3b82f6', icon: CheckCircle, bg: 'rgba(59,130,246,0.12)' },
-  preparing:   { label: 'Preparing', color: 'var(--c-fire)', icon: ChefHat, bg: 'rgba(232,66,10,0.12)' },
-  delivering:  { label: 'On the way', color: '#8b5cf6', icon: Truck, bg: 'rgba(139,92,246,0.12)' },
-  delivered:   { label: 'Delivered', color: '#10b981', icon: Package, bg: 'rgba(16,185,129,0.12)' },
-  cancelled:   { label: 'Cancelled', color: '#ef4444', icon: XCircle, bg: 'rgba(239,68,68,0.12)' },
+  pending:     { labelKey: 'orders_status_pending', color: '#f59e0b', icon: Clock, bg: 'rgba(245,158,11,0.12)' },
+  confirmed:   { labelKey: 'orders_status_confirmed', color: '#3b82f6', icon: CheckCircle, bg: 'rgba(59,130,246,0.12)' },
+  preparing:   { labelKey: 'orders_status_preparing', color: 'var(--c-fire)', icon: ChefHat, bg: 'rgba(232,66,10,0.12)' },
+  delivering:  { labelKey: 'orders_status_delivering', color: '#8b5cf6', icon: Truck, bg: 'rgba(139,92,246,0.12)' },
+  delivered:   { labelKey: 'orders_status_delivered', color: '#10b981', icon: Package, bg: 'rgba(16,185,129,0.12)' },
+  cancelled:   { labelKey: 'orders_status_cancelled', color: '#ef4444', icon: XCircle, bg: 'rgba(239,68,68,0.12)' },
 }
 
 function OrderCard({ order, index }) {
   const [open, setOpen] = useState(false)
   const [items, setItems] = useState([])
+  const t = useT()
   const cfg = STATUS_CONFIG[order.status] || STATUS_CONFIG.pending
   const Icon = cfg.icon
 
@@ -72,7 +74,7 @@ function OrderCard({ order, index }) {
             padding: '4px 12px', borderRadius: 20, fontSize: '0.78rem', fontWeight: 600,
             background: cfg.bg, color: cfg.color, border: `1px solid ${cfg.color}33`,
           }}>
-            {cfg.label}
+            {t(cfg.labelKey)}
           </span>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
@@ -97,7 +99,7 @@ function OrderCard({ order, index }) {
             <div style={{ padding: '0 24px 24px', borderTop: '1px solid var(--c-border)' }}>
               <div style={{ marginTop: 16 }}>
                 <p style={{ fontSize: '0.8rem', fontWeight: 600, color: 'var(--c-muted)', letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 12 }}>
-                  Order items
+                  {t('orders_items_label')}
                 </p>
                 {items.map(item => (
                   <div key={item.id} style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0', borderBottom: '1px solid var(--c-border)', fontSize: '0.9rem' }}>
@@ -109,7 +111,7 @@ function OrderCard({ order, index }) {
                 ))}
                 {order.delivery_address && (
                   <div style={{ marginTop: 16, padding: '12px 16px', background: 'var(--c-bg3)', borderRadius: 10 }}>
-                    <p style={{ fontSize: '0.8rem', color: 'var(--c-muted)', marginBottom: 4 }}>Address</p>
+                    <p style={{ fontSize: '0.8rem', color: 'var(--c-muted)', marginBottom: 4 }}>{t('orders_address_label')}</p>
                     <p style={{ fontSize: '0.88rem' }}>{order.delivery_address}</p>
                   </div>
                 )}
@@ -125,6 +127,7 @@ function OrderCard({ order, index }) {
 export default function OrdersPage() {
   const navigate = useNavigate()
   const user = useAuthStore(s => s.user)
+  const t = useT()
   const [orders, setOrders] = useState([])
   const [loading, setLoading] = useState(true)
 
@@ -146,10 +149,10 @@ export default function OrdersPage() {
       <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', textAlign: 'center', padding: 24 }}>
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
           <div style={{ fontSize: 64, marginBottom: 20 }}>🔐</div>
-          <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '2rem', marginBottom: 12 }}>Sign in to your account</h2>
-          <p style={{ color: 'var(--c-muted)', marginBottom: 32 }}>To view your order history</p>
+          <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '2rem', marginBottom: 12 }}>{t('orders_auth_title')}</h2>
+          <p style={{ color: 'var(--c-muted)', marginBottom: 32 }}>{t('orders_auth_sub')}</p>
           <button className="btn-primary" onClick={() => navigate('/auth')}>
-            <span style={{ position: 'relative', zIndex: 1 }}>Sign in</span>
+            <span style={{ position: 'relative', zIndex: 1 }}>{t('auth_signin_tab')}</span>
           </button>
         </motion.div>
       </div>
@@ -161,7 +164,7 @@ export default function OrdersPage() {
       <div className="container" style={{ maxWidth: 800 }}>
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} style={{ marginBottom: 40 }}>
           <h1 className="section-title">
-            My <span style={{ color: 'var(--c-fire)', fontStyle: 'italic' }}>orders</span>
+            {t('orders_title1')} <span style={{ color: 'var(--c-fire)', fontStyle: 'italic' }}>{t('orders_title2')}</span>
           </h1>
         </motion.div>
 
@@ -172,10 +175,10 @@ export default function OrdersPage() {
         ) : orders.length === 0 ? (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} style={{ textAlign: 'center', padding: '80px 0' }}>
             <div style={{ fontSize: 64, marginBottom: 20 }}>🍕</div>
-            <h3 style={{ fontFamily: 'var(--font-display)', fontSize: '1.8rem', marginBottom: 12 }}>No orders yet</h3>
-            <p style={{ color: 'var(--c-muted)', marginBottom: 32 }}>Place your first order right now.</p>
+            <h3 style={{ fontFamily: 'var(--font-display)', fontSize: '1.8rem', marginBottom: 12 }}>{t('orders_empty_title')}</h3>
+            <p style={{ color: 'var(--c-muted)', marginBottom: 32 }}>{t('orders_empty_sub')}</p>
             <button className="btn-primary" onClick={() => navigate('/menu')}>
-              <span style={{ position: 'relative', zIndex: 1 }}>Open menu</span>
+              <span style={{ position: 'relative', zIndex: 1 }}>{t('nav_menu')}</span>
             </button>
           </motion.div>
         ) : (

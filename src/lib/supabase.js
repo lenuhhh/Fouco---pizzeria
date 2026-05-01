@@ -38,19 +38,107 @@ function mockQueryBuilder(data) {
   return builder
 }
 
+// ─── Demo localStorage auth ───────────────────────────────────────────────────
+const DEMO_USERS_KEY = 'fuoco_demo_users'
+const DEMO_SESSION_KEY = 'fuoco_demo_session'
+
+function getDemoUsers() {
+  try { return JSON.parse(localStorage.getItem(DEMO_USERS_KEY) || '[]') } catch { return [] }
+}
+function saveDemoUsers(users) { localStorage.setItem(DEMO_USERS_KEY, JSON.stringify(users)) }
+function getDemoSession() {
+  try { return JSON.parse(localStorage.getItem(DEMO_SESSION_KEY) || 'null') } catch { return null }
+}
+function saveDemoSession(session) { localStorage.setItem(DEMO_SESSION_KEY, JSON.stringify(session)) }
+function clearDemoSession() { localStorage.removeItem(DEMO_SESSION_KEY) }
+
+let _authChangeListeners = []
+function notifyAuthChange(event, session) {
+  _authChangeListeners.forEach(cb => cb(event, session))
+}
+
+function makeSession(user) {
+  return { access_token: 'demo_' + user.id, user }
+}
+
 const mockAuth = {
-  getSession: () => Promise.resolve({ data: { session: null }, error: null }),
-  onAuthStateChange: () => ({ data: { subscription: { unsubscribe: () => {} } } }),
-  signInWithPassword: () => Promise.resolve({ data: {}, error: { message: 'Supabase is not configured - demo mode is active' } }),
-  signUp: () => Promise.resolve({ data: {}, error: { message: 'Supabase is not configured - demo mode is active' } }),
-  resend: () => Promise.resolve({ data: {}, error: { message: 'Supabase is not configured - demo mode is active' } }),
-  signOut: () => Promise.resolve({ error: null }),
+  getSession: () => {
+    const session = getDemoSession()
+    return Promise.resolve({ data: { session }, error: null })
+  },
+  onAuthStateChange: (callback) => {
+    _authChangeListeners.push(callback)
+    return { data: { subscription: { unsubscribe: () => {
+      _authChangeListeners = _authChangeListeners.filter(cb => cb !== callback)
+    } } } }
+  },
+  signInWithPassword: ({ email, password }) => {
+    const users = getDemoUsers()
+    const user = users.find(u => u.email === email && u.password === password)
+    if (!user) return Promise.resolve({ data: {}, error: { message: 'Invalid login credentials' } })
+    const session = makeSession(user)
+    saveDemoSession(session)
+    notifyAuthChange('SIGNED_IN', session)
+    return Promise.resolve({ data: { user, session }, error: null })
+  },
+  signUp: ({ email, password, options }) => {
+    const users = getDemoUsers()
+    if (users.find(u => u.email === email)) {
+      return Promise.resolve({ data: {}, error: { message: 'User already registered' } })
+    }
+    const user = {
+      id: 'demo_' + Date.now(),
+      email,
+      password,
+      user_metadata: { full_name: options?.data?.full_name || '' },
+    }
+    saveDemoUsers([...users, user])
+    const session = makeSession(user)
+    saveDemoSession(session)
+    notifyAuthChange('SIGNED_IN', session)
+    return Promise.resolve({ data: { user, session }, error: null })
+  },
+  resend: () => Promise.resolve({ data: {}, error: null }),
+  signOut: () => {
+    clearDemoSession()
+    notifyAuthChange('SIGNED_OUT', null)
+    return Promise.resolve({ error: null })
+  },
+}
+
+// ─── Demo profiles store ──────────────────────────────────────────────────────
+const DEMO_PROFILES_KEY = 'fuoco_demo_profiles'
+function getDemoProfiles() {
+  try { return JSON.parse(localStorage.getItem(DEMO_PROFILES_KEY) || '[]') } catch { return [] }
+}
+function saveDemoProfiles(p) { localStorage.setItem(DEMO_PROFILES_KEY, JSON.stringify(p)) }
+
+function mockProfilesBuilder(userId) {
+  const profiles = getDemoProfiles()
+  const row = profiles.find(p => p.id === userId) || null
+  let _upsertData = null
+  const builder = {
+    select() { return builder },
+    eq() { return builder },
+    single() { return Promise.resolve({ data: row, error: row ? null : { message: 'not found' } }) },
+    upsert(data) {
+      _upsertData = data
+      const list = getDemoProfiles().filter(p => p.id !== data.id)
+      saveDemoProfiles([...list, data])
+      return { select() { return { single() { return Promise.resolve({ data, error: null }) } } } }
+    },
+  }
+  return builder
 }
 
 const mockClient = {
   auth: mockAuth,
   from: (table) => {
     if (table === 'products') return mockQueryBuilder(MOCK_PRODUCTS)
+    if (table === 'profiles') {
+      const session = getDemoSession()
+      return mockProfilesBuilder(session?.user?.id)
+    }
     return mockQueryBuilder([])
   },
 }

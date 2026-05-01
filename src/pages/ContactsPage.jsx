@@ -2,25 +2,27 @@ import React, { useState } from 'react'
 import { motion } from 'framer-motion'
 import { Phone, Mail, MapPin, Clock, Send, CheckCircle, Flame, Car, Train } from 'lucide-react'
 import toast from 'react-hot-toast'
-
-const FAQS = [
-  { q: 'How long is delivery?', a: 'Usually 25-40 minutes depending on your district. Minimum order for delivery is ₴250.' },
-  { q: 'Can I pick up my order?', a: 'Yes. Pick-up is available at Khreshchatyk St 22, Kyiv, with no minimum order value.' },
-  { q: 'Can I customize ingredients?', a: 'Absolutely. Add your preferences during checkout and we will tailor the pizza for you.' },
-  { q: 'Are you open on holidays?', a: 'Yes, we are open daily from 11:00 to 23:00, including public holidays.' },
-  { q: 'Do you have options for kids?', a: 'Yes, we prepare mini pizzas for kids. Our team can suggest size and toppings.' },
-]
+import { useT } from '../lib/i18n'
 
 export default function ContactsPage() {
   const [form, setForm] = useState({ name: '', phone: '', message: '' })
   const [sent, setSent] = useState(false)
   const [openFaq, setOpenFaq] = useState(null)
+  const t = useT()
+
+  const FAQS = [
+    { q: t('contacts_faq1_q'), a: t('contacts_faq1_a') },
+    { q: t('contacts_faq2_q'), a: t('contacts_faq2_a') },
+    { q: t('contacts_faq3_q'), a: t('contacts_faq3_a') },
+    { q: t('contacts_faq4_q'), a: t('contacts_faq4_a') },
+    { q: t('contacts_faq5_q'), a: t('contacts_faq5_a') },
+  ]
 
   function handleSend(e) {
     e.preventDefault()
-    if (!form.name || !form.phone) { toast.error('Please enter your name and phone number'); return }
+    if (!form.name || !form.phone) { toast.error(t('contacts_form_required')); return }
     setSent(true)
-    toast.success('Message sent! We will call you back within 15 minutes.')
+    toast.success(t('contacts_form_toast'))
   }
 
   return (
@@ -36,15 +38,15 @@ export default function ContactsPage() {
           <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16 }}>
               <span className="tag tag-fire" style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
-                <Flame size={11} fill="currentColor" /> We are here to help
+                <Flame size={11} fill="currentColor" /> {t('contacts_hero_tag')}
               </span>
             </div>
             <h1 className="section-title" style={{ marginBottom: 16 }}>
-              Get in touch<br />
-              <span style={{ color: 'var(--c-fire)', fontStyle: 'italic' }}>with us</span>
+              {t('contacts_hero_title')}<br />
+              <span style={{ color: 'var(--c-fire)', fontStyle: 'italic' }}>{t('contacts_hero_title2')}</span>
             </h1>
             <p style={{ color: 'var(--c-muted)', fontSize: '1.05rem', maxWidth: 500, lineHeight: 1.8 }}>
-              Questions about your order, feedback, or a quick request for our team - we are listening.
+              {t('contacts_hero_sub')}
             </p>
           </motion.div>
         </div>
@@ -57,31 +59,27 @@ export default function ContactsPage() {
             {[
               {
                 icon: <Phone size={22} />,
-                title: 'Phone',
+                title: t('contacts_card_phone_title'),
                 main: '+38 044 555 01 99',
-                sub: 'Support line, Mon-Sun 10:00-23:00',
-                action: 'Call',
+                sub: t('contacts_card_phone_sub'),
               },
               {
                 icon: <Mail size={22} />,
-                title: 'Email',
+                title: t('contacts_card_email_title'),
                 main: 'hello@fuoco.ua',
-                sub: 'Response within about two hours',
-                action: 'Write',
+                sub: t('contacts_card_email_sub'),
               },
               {
                 icon: <MapPin size={22} />,
-                title: 'Address',
-                main: 'Khreshchatyk St 22, Kyiv',
-                sub: 'City centre, 2 min from Khreshchatyk metro',
-                action: 'Route',
+                title: t('contacts_card_address_title'),
+                main: t('contacts_card_address_main'),
+                sub: t('contacts_card_address_sub'),
               },
               {
                 icon: <Clock size={22} />,
-                title: 'Opening hours',
-                main: 'Mon-Sun: 11:00-23:00',
-                sub: 'Kitchen until 22:30, delivery until 22:45',
-                action: null,
+                title: t('contacts_card_hours_title'),
+                main: t('contacts_card_hours_main'),
+                sub: t('contacts_card_hours_sub'),
               },
             ].map((card, i) => (
               <motion.div
@@ -122,20 +120,20 @@ export default function ContactsPage() {
                 borderRadius: 'var(--r-lg)', padding: '24px 28px',
               }}
             >
-              <h3 style={{ fontWeight: 700, color: 'var(--c-cream)', marginBottom: 16, fontSize: '0.95rem' }}>How to get here</h3>
+              <h3 style={{ fontWeight: 700, color: 'var(--c-cream)', marginBottom: 16, fontSize: '0.95rem' }}>{t('contacts_howto_title')}</h3>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
                 <div style={{ display: 'flex', gap: 12, alignItems: 'flex-start' }}>
                   <Train size={16} color="var(--c-fire)" style={{ marginTop: 2, flexShrink: 0 }} />
                   <div>
-                    <div style={{ color: 'var(--c-cream)', fontSize: '0.88rem', fontWeight: 500 }}>Metro Khreshchatyk</div>
-                    <div style={{ color: 'var(--c-muted)', fontSize: '0.8rem' }}>2 minutes on foot, Exit 3</div>
+                    <div style={{ color: 'var(--c-cream)', fontSize: '0.88rem', fontWeight: 500 }}>{t('contacts_metro_title')}</div>
+                    <div style={{ color: 'var(--c-muted)', fontSize: '0.8rem' }}>{t('contacts_metro_sub')}</div>
                   </div>
                 </div>
                 <div style={{ display: 'flex', gap: 12, alignItems: 'flex-start' }}>
                   <Car size={16} color="var(--c-gold)" style={{ marginTop: 2, flexShrink: 0 }} />
                   <div>
-                    <div style={{ color: 'var(--c-cream)', fontSize: '0.88rem', fontWeight: 500 }}>Parking</div>
-                    <div style={{ color: 'var(--c-muted)', fontSize: '0.8rem' }}>Free courtyard parking, entrance from Prorizna St</div>
+                    <div style={{ color: 'var(--c-cream)', fontSize: '0.88rem', fontWeight: 500 }}>{t('contacts_parking_title')}</div>
+                    <div style={{ color: 'var(--c-muted)', fontSize: '0.8rem' }}>{t('contacts_parking_sub')}</div>
                   </div>
                 </div>
               </div>
@@ -158,28 +156,27 @@ export default function ContactsPage() {
                     transition={{ type: 'spring', stiffness: 200, delay: 0.1 }}
                     style={{ fontSize: 64, marginBottom: 24 }}
                   >✅</motion.div>
-                  <h3 style={{ fontFamily: 'var(--font-display)', fontSize: '1.6rem', marginBottom: 12 }}>Sent!</h3>
+                  <h3 style={{ fontFamily: 'var(--font-display)', fontSize: '1.6rem', marginBottom: 12 }}>{t('contacts_sent_title')}</h3>
                   <p style={{ color: 'var(--c-muted)', lineHeight: 1.8 }}>
-                    We have received your message and will call you within 15 minutes.<br />
-                    In the meantime, explore our menu.
+                    {t('contacts_sent_sub')}
                   </p>
                   <button className="btn-primary" onClick={() => setSent(false)} style={{ marginTop: 32, padding: '12px 32px' }}>
-                    <span style={{ position: 'relative', zIndex: 1 }}>Send another</span>
+                    <span style={{ position: 'relative', zIndex: 1 }}>{t('contacts_sent_again')}</span>
                   </button>
                 </motion.div>
               ) : (
                 <>
                   <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '1.8rem', fontWeight: 700, marginBottom: 8 }}>
-                    Write to us
+                    {t('contacts_form_title')}
                   </h2>
                   <p style={{ color: 'var(--c-muted)', marginBottom: 32, fontSize: '0.9rem' }}>
-                    We reply within 15 minutes during business hours
+                    {t('contacts_form_sub')}
                   </p>
 
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
                     <div>
                       <label style={{ display: 'block', color: 'var(--c-muted)', fontSize: '0.8rem', marginBottom: 8, letterSpacing: '0.05em', textTransform: 'uppercase' }}>
-                        Your name *
+                        {t('contacts_form_name_label')}
                       </label>
                       <input
                         className="input-field"
@@ -190,7 +187,7 @@ export default function ContactsPage() {
                     </div>
                     <div>
                       <label style={{ display: 'block', color: 'var(--c-muted)', fontSize: '0.8rem', marginBottom: 8, letterSpacing: '0.05em', textTransform: 'uppercase' }}>
-                        Phone *
+                        {t('contacts_form_phone_label')}
                       </label>
                       <input
                         className="input-field"
@@ -201,11 +198,11 @@ export default function ContactsPage() {
                     </div>
                     <div>
                       <label style={{ display: 'block', color: 'var(--c-muted)', fontSize: '0.8rem', marginBottom: 8, letterSpacing: '0.05em', textTransform: 'uppercase' }}>
-                        Message
+                        {t('contacts_form_message_label')}
                       </label>
                       <textarea
                         className="input-field"
-                        placeholder="Your question, feedback, or request..."
+                        placeholder={t('contacts_form_message_placeholder')}
                         rows={5}
                         value={form.message}
                         onChange={e => setForm({ ...form, message: e.target.value })}
@@ -220,12 +217,12 @@ export default function ContactsPage() {
                       style={{ padding: '16px', fontSize: '1rem', width: '100%', justifyContent: 'center', marginTop: 8 }}
                     >
                       <span style={{ display: 'flex', alignItems: 'center', gap: 8, position: 'relative', zIndex: 1 }}>
-                        <Send size={18} /> Send message
+                        <Send size={18} /> {t('contacts_form_send_btn')}
                       </span>
                     </motion.button>
 
                     <p style={{ color: 'var(--c-muted)', fontSize: '0.75rem', textAlign: 'center' }}>
-                      By clicking the button, you agree to the privacy policy
+                      {t('contacts_form_privacy')}
                     </p>
                   </div>
                 </>
@@ -249,8 +246,8 @@ export default function ContactsPage() {
               }} />
               <MapPin size={32} color="var(--c-fire)" />
               <div style={{ textAlign: 'center' }}>
-                <div style={{ color: 'var(--c-cream)', fontWeight: 600, marginBottom: 4 }}>Khreshchatyk St 22, Kyiv</div>
-                <div style={{ color: 'var(--c-muted)', fontSize: '0.85rem' }}>2 min from metro · Free parking</div>
+              <div style={{ color: 'var(--c-cream)', fontWeight: 600, marginBottom: 4 }}>{t('contacts_map_address')}</div>
+              <div style={{ color: 'var(--c-muted)', fontSize: '0.85rem' }}>{t('contacts_map_sub')}</div>
               </div>
               <a
                 href="https://maps.google.com"
@@ -259,7 +256,7 @@ export default function ContactsPage() {
                 style={{ zIndex: 1 }}
               >
                 <button className="btn-ghost" style={{ padding: '8px 20px', fontSize: '0.85rem' }}>
-                  Open map
+                  {t('contacts_map_btn')}
                 </button>
               </a>
             </motion.div>
@@ -275,7 +272,7 @@ export default function ContactsPage() {
               <span className="tag tag-gold">FAQ</span>
             </div>
             <h2 className="section-title">
-              Answers to <span style={{ color: 'var(--c-fire)', fontStyle: 'italic' }}>common questions</span>
+              {t('contacts_faq_title1')} <span style={{ color: 'var(--c-fire)', fontStyle: 'italic' }}>{t('contacts_faq_title2')}</span>
             </h2>
           </div>
 
