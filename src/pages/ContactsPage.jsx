@@ -4,8 +4,8 @@ import { Phone, Mail, MapPin, Clock, Send, CheckCircle, Flame, Car, Train } from
 import toast from 'react-hot-toast'
 
 const FAQS = [
-  { q: 'How long is delivery?', a: 'Usually 25-40 minutes depending on your district. Minimum order for delivery is €6.00.' },
-  { q: 'Can I pick up my order?', a: 'Yes. Pick-up is available at Alexanderplatz 8, Berlin, with no minimum order value.' },
+  { q: 'How long is delivery?', a: 'Usually 25-40 minutes depending on your district. Minimum order for delivery is ₴250.' },
+  { q: 'Can I pick up my order?', a: 'Yes. Pick-up is available at вул. Хрещатик 22, Київ, with no minimum order value.' },
   { q: 'Can I customize ingredients?', a: 'Absolutely. Add your preferences during checkout and we will tailor the pizza for you.' },
   { q: 'Are you open on holidays?', a: 'Yes, we are open daily from 11:00 to 23:00, including public holidays.' },
   { q: 'Do you have options for kids?', a: 'Yes, we prepare mini pizzas for kids. Our team can suggest size and toppings.' },
@@ -58,22 +58,22 @@ export default function ContactsPage() {
               {
                 icon: <Phone size={22} />,
                 title: 'Phone',
-                main: '+49 30 5550 1990',
-                sub: 'Fictional support line, Mon-Sun 10:00-23:00',
+                main: '+38 044 555 01 99',
+                sub: 'Support line, Mon-Sun 10:00-23:00',
                 action: 'Call',
               },
               {
                 icon: <Mail size={22} />,
                 title: 'Email',
-                main: 'hello@fuoco.de',
+                main: 'hello@fuoco.ua',
                 sub: 'Response within about two hours',
                 action: 'Write',
               },
               {
                 icon: <MapPin size={22} />,
                 title: 'Address',
-                main: 'Alexanderplatz 8, 10178 Berlin',
-                sub: 'Mitte district, 2 minutes from U-Bahn',
+                main: 'вул. Хрещатик 22, Київ',
+                sub: 'Центр, 2 хвилини від метро Хрещатик',
                 action: 'Route',
               },
               {
@@ -127,15 +127,15 @@ export default function ContactsPage() {
                 <div style={{ display: 'flex', gap: 12, alignItems: 'flex-start' }}>
                   <Train size={16} color="var(--c-fire)" style={{ marginTop: 2, flexShrink: 0 }} />
                   <div>
-                    <div style={{ color: 'var(--c-cream)', fontSize: '0.88rem', fontWeight: 500 }}>U-Bahn Alexanderplatz</div>
-                    <div style={{ color: 'var(--c-muted)', fontSize: '0.8rem' }}>2 minutes on foot, Exit 2</div>
+                    <div style={{ color: 'var(--c-cream)', fontSize: '0.88rem', fontWeight: 500 }}>Метро Хрещатик</div>
+                    <div style={{ color: 'var(--c-muted)', fontSize: '0.8rem' }}>2 хвилини пішки, вихід 3</div>
                   </div>
                 </div>
                 <div style={{ display: 'flex', gap: 12, alignItems: 'flex-start' }}>
                   <Car size={16} color="var(--c-gold)" style={{ marginTop: 2, flexShrink: 0 }} />
                   <div>
                     <div style={{ color: 'var(--c-cream)', fontSize: '0.88rem', fontWeight: 500 }}>Parking</div>
-                    <div style={{ color: 'var(--c-muted)', fontSize: '0.8rem' }}>Free courtyard parking, entrance via Spandauer Strasse</div>
+                    <div style={{ color: 'var(--c-muted)', fontSize: '0.8rem' }}>Безкоштовне паркування у дворі, в'їзд з вул. Прорізної</div>
                   </div>
                 </div>
               </div>
@@ -183,7 +183,7 @@ export default function ContactsPage() {
                       </label>
                       <input
                         className="input-field"
-                        placeholder="Max Mustermann"
+                        placeholder="Іван Петренко"
                         value={form.name}
                         onChange={e => setForm({ ...form, name: e.target.value })}
                       />
@@ -194,7 +194,7 @@ export default function ContactsPage() {
                       </label>
                       <input
                         className="input-field"
-                        placeholder="+49 30 5550 1990"
+                        placeholder="+38 044 555 01 99"
                         value={form.phone}
                         onChange={e => setForm({ ...form, phone: e.target.value })}
                       />
@@ -249,8 +249,8 @@ export default function ContactsPage() {
               }} />
               <MapPin size={32} color="var(--c-fire)" />
               <div style={{ textAlign: 'center' }}>
-                <div style={{ color: 'var(--c-cream)', fontWeight: 600, marginBottom: 4 }}>Alexanderplatz 8, Berlin</div>
-                <div style={{ color: 'var(--c-muted)', fontSize: '0.85rem' }}>2 min from U-Bahn · Free parking</div>
+                <div style={{ color: 'var(--c-cream)', fontWeight: 600, marginBottom: 4 }}>вул. Хрещатик 22, Київ</div>
+                <div style={{ color: 'var(--c-muted)', fontSize: '0.85rem' }}>2 хв від метро · Безкоштовне паркування</div>
               </div>
               <a
                 href="https://maps.google.com"

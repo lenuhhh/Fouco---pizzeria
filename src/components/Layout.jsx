@@ -265,22 +265,22 @@ export default function Layout() {
           borderBottom: '1px solid var(--c-border)',
           padding: '40px 0',
         }}>
-          <div className="container" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 24 }}>
+          <div className="container footer-newsletter">
             <div>
               <h3 style={{ fontFamily: 'var(--font-display)', fontSize: '1.4rem', fontWeight: 700, marginBottom: 6 }}>
                 Get <span style={{ color: 'var(--c-fire)' }}>10%</span> off your first order
               </h3>
               <p style={{ color: 'var(--c-muted)', fontSize: '0.88rem' }}>Sign up and receive your personal promo code</p>
             </div>
-            <div style={{ display: 'flex', gap: 0 }}>
+            <div className="footer-newsletter-form">
               <input
-                className="input-field"
+                className="input-field footer-newsletter-input"
                 placeholder="Your email"
-                style={{ borderRadius: '12px 0 0 12px', borderRight: 'none', minWidth: 240, borderColor: 'rgba(232,66,10,0.2)' }}
+                style={{ borderColor: 'rgba(232,66,10,0.2)' }}
               />
               <button
-                className="btn-primary"
-                style={{ borderRadius: '0 12px 12px 0', padding: '14px 24px', whiteSpace: 'nowrap' }}
+                className="btn-primary footer-newsletter-btn"
+                style={{ whiteSpace: 'nowrap' }}
                 onClick={() => toast.success('Welcome! Your discount is active.')}
               >
                 <span style={{ position: 'relative', zIndex: 1 }}>Claim</span>
@@ -291,7 +291,7 @@ export default function Layout() {
 
         {/* Main footer grid */}
         <div className="container" style={{ padding: '60px 0 40px' }}>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 48, marginBottom: 48 }}>
+          <div className="footer-grid">
             {/* Brand */}
             <div style={{ gridColumn: 'span 1' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 20 }}>
@@ -380,9 +380,9 @@ export default function Layout() {
               </h4>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
                 {[
-                  { icon: <Phone size={15} />, text: '+49 30 5550 1990', sub: 'Fictional service hotline' },
-                  { icon: <Mail size={15} />, text: 'hello@fuoco.de', sub: 'Email support' },
-                  { icon: <MapPin size={15} />, text: 'Alexanderplatz 8, Berlin', sub: 'Mitte district' },
+                  { icon: <Phone size={15} />, text: '+38 044 555 01 99', sub: 'Mon-Sun 10:00–23:00' },
+                  { icon: <Mail size={15} />, text: 'hello@fuoco.ua', sub: 'Email support' },
+                  { icon: <MapPin size={15} />, text: 'вул. Хрещатик 22, Київ', sub: 'Центр Києва' },
                   { icon: <Clock size={15} />, text: 'Mon-Sun: 11:00-23:00', sub: 'Open every day' },
                 ].map(c => (
                   <div key={c.text} style={{ display: 'flex', alignItems: 'flex-start', gap: 12 }}>
@@ -403,10 +403,7 @@ export default function Layout() {
           </div>
 
           {/* Bottom row */}
-          <div style={{
-            borderTop: '1px solid var(--c-border)', paddingTop: 28,
-            display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 12,
-          }}>
+          <div className="footer-bottom">
             <p style={{ color: 'var(--c-muted)', fontSize: '0.82rem' }}>
               © 2024 Fuoco. All rights reserved.
             </p>
@@ -429,6 +426,88 @@ export default function Layout() {
         @media (max-width: 768px) {
           .desktop-nav { display: none !important; }
           .mobile-menu-btn { display: flex !important; }
+        }
+
+        /* ── Footer layout ── */
+        .footer-newsletter {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          flex-wrap: wrap;
+          gap: 24px;
+        }
+        .footer-newsletter-form {
+          display: flex;
+          gap: 0;
+        }
+        .footer-newsletter-input {
+          border-radius: 12px 0 0 12px !important;
+          border-right: none !important;
+          min-width: 240px;
+        }
+        .footer-newsletter-btn {
+          border-radius: 0 12px 12px 0 !important;
+          padding: 14px 24px !important;
+        }
+        .footer-grid {
+          display: grid;
+          grid-template-columns: 1.4fr 1fr 1fr 1.2fr;
+          gap: 48px;
+          margin-bottom: 48px;
+        }
+        .footer-bottom {
+          border-top: 1px solid var(--c-border);
+          padding-top: 28px;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          flex-wrap: wrap;
+          gap: 12px;
+        }
+
+        /* ── Tablet (≤ 1024px) ── */
+        @media (max-width: 1024px) {
+          .footer-grid {
+            grid-template-columns: 1fr 1fr;
+            gap: 36px;
+          }
+          .footer-newsletter-input {
+            min-width: 200px;
+          }
+        }
+
+        /* ── Mobile (≤ 640px) ── */
+        @media (max-width: 640px) {
+          .footer-newsletter {
+            flex-direction: column;
+            align-items: flex-start;
+          }
+          .footer-newsletter-form {
+            width: 100%;
+            flex-direction: column;
+            gap: 8px;
+          }
+          .footer-newsletter-input {
+            border-radius: 12px !important;
+            border-right: 1px solid rgba(232,66,10,0.2) !important;
+            min-width: unset;
+            width: 100% !important;
+          }
+          .footer-newsletter-btn {
+            border-radius: 12px !important;
+            width: 100% !important;
+            justify-content: center;
+          }
+          .footer-grid {
+            grid-template-columns: 1fr;
+            gap: 28px;
+          }
+          .footer-bottom {
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            gap: 16px;
+          }
         }
       `}</style>
     </div>
