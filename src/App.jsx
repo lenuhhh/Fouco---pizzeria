@@ -11,6 +11,7 @@ import OrdersPage from './pages/OrdersPage'
 import ProfilePage from './pages/ProfilePage'
 import AuthPage from './pages/AuthPage'
 import ContactsPage from './pages/ContactsPage'
+import SiteMapPage from './pages/SiteMapPage'
 import './index.css'
 
 function ProtectedRoute({ children }) {
@@ -97,6 +98,7 @@ export default function App() {
           <Route path="profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
           <Route path="auth" element={<GuestOnlyRoute><AuthPage /></GuestOnlyRoute>} />
           <Route path="contacts" element={<ContactsPage />} />
+          <Route path="sitemap" element={<SiteMapPage />} />
         </Route>
       </Routes>
     </BrowserRouter>

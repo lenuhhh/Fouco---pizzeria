@@ -359,7 +359,7 @@ export default function Layout() {
                 { label: 'Contact', to: '/contacts' },
                 { label: 'Promotions', to: '/menu' },
                 { label: 'Delivery', to: '/contacts' },
-                { label: 'Careers', to: '/' },
+                { label: 'Site Structure', to: '/sitemap' },
               ].map(item => (
                 <Link key={item.label} to={item.to}>
                   <motion.div whileHover={{ x: 4 }}
