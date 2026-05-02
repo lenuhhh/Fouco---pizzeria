@@ -5,11 +5,13 @@ import { useCartStore } from '../store'
 import toast from 'react-hot-toast'
 import { formatEUR } from '../lib/price'
 import { optimizeImageUrl } from '../lib/image'
+import { useT } from '../lib/i18n'
 
-export default function ProductCard({ product, index = 0 }) {
+export default function ProductCard({ product, index = 0, onTagClick }) {
   const [imgError, setImgError] = useState(false)
   const [added, setAdded] = useState(false)
   const addItem = useCartStore(s => s.addItem)
+  const t = useT()
 
   function handleAdd(e) {
     e.stopPropagation()
@@ -57,7 +59,7 @@ export default function ProductCard({ product, index = 0 }) {
         {product.is_popular && (
           <div style={{ position: 'absolute', top: 12, left: 12 }}>
             <span className="tag tag-fire" style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-              <Star size={10} fill="currentColor" /> Bestseller
+              <Star size={10} fill="currentColor" /> {t('menu_tag_bestseller')}
             </span>
           </div>
         )}
@@ -89,6 +91,34 @@ export default function ProductCard({ product, index = 0 }) {
             <span style={{ display: 'flex', alignItems: 'center', gap: 4, color: 'var(--c-muted)', fontSize: '0.78rem' }}>
               <Clock size={12} /> {product.cooking_time} min
             </span>
+          )}
+        </div>
+
+        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginTop: 6 }}>
+          <button
+            type="button"
+            onClick={() => onTagClick?.({ type: 'category', value: product.category })}
+            style={{ fontSize: '0.72rem', padding: '3px 9px', borderRadius: 999, border: '1px solid var(--c-border)', color: 'var(--c-muted)' }}
+          >
+            {t(`menu_cat_${product.category}`)}
+          </button>
+          {product.is_popular && (
+            <button
+              type="button"
+              onClick={() => onTagClick?.({ type: 'search', value: 'bestseller' })}
+              style={{ fontSize: '0.72rem', padding: '3px 9px', borderRadius: 999, border: '1px solid rgba(232,66,10,0.35)', color: 'var(--c-fire2)' }}
+            >
+              {t('menu_tag_bestseller')}
+            </button>
+          )}
+          {(product.cooking_time || 0) > 0 && (product.cooking_time || 0) <= 15 && (
+            <button
+              type="button"
+              onClick={() => onTagClick?.({ type: 'search', value: 'fast' })}
+              style={{ fontSize: '0.72rem', padding: '3px 9px', borderRadius: 999, border: '1px solid rgba(212,160,71,0.35)', color: 'var(--c-gold2)' }}
+            >
+              {t('menu_tag_fast')}
+            </button>
           )}
         </div>
 

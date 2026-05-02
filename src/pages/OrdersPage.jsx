@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { ChevronDown, ChevronUp, Clock, CheckCircle, Truck, XCircle, ChefHat, Package } from 'lucide-react'
 import { supabase } from '../lib/supabase'
-import { useAuthStore } from '../store'
+import { useAuthStore, useLangStore } from '../store'
 import { formatEUR } from '../lib/price'
 import { useT } from '../lib/i18n'
 
@@ -16,7 +16,7 @@ const STATUS_CONFIG = {
   cancelled:   { labelKey: 'orders_status_cancelled', color: '#ef4444', icon: XCircle, bg: 'rgba(239,68,68,0.12)' },
 }
 
-function OrderCard({ order, index }) {
+function OrderCard({ order, index, lang }) {
   const [open, setOpen] = useState(false)
   const [items, setItems] = useState([])
   const t = useT()
@@ -33,9 +33,11 @@ function OrderCard({ order, index }) {
     setOpen(true)
   }
 
-  const date = new Date(order.created_at).toLocaleDateString('en-GB', {
+  const date = new Date(order.created_at).toLocaleDateString(lang === 'uk' ? 'uk-UA' : 'en-GB', {
     day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit'
   })
+  const itemsCount = items.reduce((sum, item) => sum + item.quantity, 0)
+  const itemsSubtotal = items.reduce((sum, item) => sum + (item.product_price * item.quantity), 0)
 
   return (
     <motion.div
@@ -49,6 +51,7 @@ function OrderCard({ order, index }) {
     >
       <div
         onClick={loadItems}
+        aria-expanded={open}
         style={{
           padding: '20px 24px', display: 'flex', alignItems: 'center',
           justifyContent: 'space-between', cursor: 'pointer',
@@ -78,6 +81,9 @@ function OrderCard({ order, index }) {
           </span>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+          <span style={{ color: 'var(--c-muted)', fontSize: '0.8rem', fontWeight: 600 }}>
+            {t('orders_items_count')}: {itemsCount || '—'}
+          </span>
           <span style={{ fontFamily: 'var(--font-display)', fontSize: '1.2rem', fontWeight: 700, color: 'var(--c-gold2)' }}>
             {formatEUR(order.total)}
           </span>
@@ -97,6 +103,45 @@ function OrderCard({ order, index }) {
             style={{ overflow: 'hidden' }}
           >
             <div style={{ padding: '0 24px 24px', borderTop: '1px solid var(--c-border)' }}>
+              <div style={{ marginTop: 16, display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: 10 }}>
+                <div style={{ padding: '12px 14px', borderRadius: 10, background: 'var(--c-bg3)' }}>
+                  <p style={{ fontSize: '0.74rem', color: 'var(--c-muted)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>{t('orders_order_id_label')}</p>
+                  <p style={{ fontSize: '0.88rem', marginTop: 4 }}>{order.id}</p>
+                </div>
+                <div style={{ padding: '12px 14px', borderRadius: 10, background: 'var(--c-bg3)' }}>
+                  <p style={{ fontSize: '0.74rem', color: 'var(--c-muted)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>{t('orders_created_at')}</p>
+                  <p style={{ fontSize: '0.88rem', marginTop: 4 }}>{date}</p>
+                </div>
+                <div style={{ padding: '12px 14px', borderRadius: 10, background: 'var(--c-bg3)' }}>
+                  <p style={{ fontSize: '0.74rem', color: 'var(--c-muted)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>{t('orders_status_label')}</p>
+                  <p style={{ fontSize: '0.88rem', marginTop: 4, color: cfg.color, fontWeight: 600 }}>{t(cfg.labelKey)}</p>
+                </div>
+                <div style={{ padding: '12px 14px', borderRadius: 10, background: 'var(--c-bg3)' }}>
+                  <p style={{ fontSize: '0.74rem', color: 'var(--c-muted)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>{t('orders_items_count')}</p>
+                  <p style={{ fontSize: '0.88rem', marginTop: 4 }}>{itemsCount}</p>
+                </div>
+                <div style={{ padding: '12px 14px', borderRadius: 10, background: 'var(--c-bg3)' }}>
+                  <p style={{ fontSize: '0.74rem', color: 'var(--c-muted)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>{t('orders_phone_label')}</p>
+                  <p style={{ fontSize: '0.88rem', marginTop: 4 }}>{order.phone || '—'}</p>
+                </div>
+                <div style={{ padding: '12px 14px', borderRadius: 10, background: 'var(--c-bg3)' }}>
+                  <p style={{ fontSize: '0.74rem', color: 'var(--c-muted)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>{t('orders_total_label')}</p>
+                  <p style={{ fontSize: '0.88rem', marginTop: 4, color: 'var(--c-gold2)', fontWeight: 700 }}>{formatEUR(order.total)}</p>
+                </div>
+              </div>
+
+              {order.delivery_address && (
+                <div style={{ marginTop: 12, padding: '12px 16px', background: 'var(--c-bg3)', borderRadius: 10 }}>
+                  <p style={{ fontSize: '0.8rem', color: 'var(--c-muted)', marginBottom: 4 }}>{t('orders_address_label')}</p>
+                  <p style={{ fontSize: '0.88rem' }}>{order.delivery_address}</p>
+                </div>
+              )}
+
+              <div style={{ marginTop: 12, padding: '12px 16px', background: 'var(--c-bg3)', borderRadius: 10 }}>
+                <p style={{ fontSize: '0.8rem', color: 'var(--c-muted)', marginBottom: 4 }}>{t('orders_comment')}</p>
+                <p style={{ fontSize: '0.88rem' }}>{order.comment || t('orders_no_comment')}</p>
+              </div>
+
               <div style={{ marginTop: 16 }}>
                 <p style={{ fontSize: '0.8rem', fontWeight: 600, color: 'var(--c-muted)', letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 12 }}>
                   {t('orders_items_label')}
@@ -109,12 +154,11 @@ function OrderCard({ order, index }) {
                     </span>
                   </div>
                 ))}
-                {order.delivery_address && (
-                  <div style={{ marginTop: 16, padding: '12px 16px', background: 'var(--c-bg3)', borderRadius: 10 }}>
-                    <p style={{ fontSize: '0.8rem', color: 'var(--c-muted)', marginBottom: 4 }}>{t('orders_address_label')}</p>
-                    <p style={{ fontSize: '0.88rem' }}>{order.delivery_address}</p>
-                  </div>
-                )}
+
+                <div style={{ marginTop: 12, paddingTop: 8, display: 'flex', justifyContent: 'space-between', fontSize: '0.9rem', color: 'var(--c-muted)' }}>
+                  <span>{t('orders_items_total')}</span>
+                  <span>{formatEUR(itemsSubtotal)}</span>
+                </div>
               </div>
             </div>
           </motion.div>
@@ -127,6 +171,7 @@ function OrderCard({ order, index }) {
 export default function OrdersPage() {
   const navigate = useNavigate()
   const user = useAuthStore(s => s.user)
+  const lang = useLangStore(s => s.lang)
   const t = useT()
   const [orders, setOrders] = useState([])
   const [loading, setLoading] = useState(true)
@@ -159,6 +204,10 @@ export default function OrdersPage() {
     )
   }
 
+  const orderCount = orders.length
+  const deliveredCount = orders.filter(o => o.status === 'delivered').length
+  const totalSpent = orders.reduce((sum, o) => sum + (o.total || 0), 0)
+
   return (
     <div style={{ minHeight: '100vh', padding: '48px 0 80px' }}>
       <div className="container" style={{ maxWidth: 800 }}>
@@ -166,6 +215,22 @@ export default function OrdersPage() {
           <h1 className="section-title">
             {t('orders_title1')} <span style={{ color: 'var(--c-fire)', fontStyle: 'italic' }}>{t('orders_title2')}</span>
           </h1>
+          {!loading && (
+            <div style={{ marginTop: 18, display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(170px, 1fr))', gap: 10 }}>
+              <div style={{ border: '1px solid rgba(232,66,10,0.28)', background: 'rgba(232,66,10,0.12)', borderRadius: 12, padding: '10px 12px' }}>
+                <p style={{ fontSize: '0.74rem', textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--c-muted)' }}>{t('orders_total_count')}</p>
+                <p style={{ fontSize: '1.35rem', fontWeight: 800, color: 'var(--c-fire2)', lineHeight: 1.2 }}>{orderCount}</p>
+              </div>
+              <div style={{ border: '1px solid var(--c-border)', background: 'var(--c-surface)', borderRadius: 12, padding: '10px 12px' }}>
+                <p style={{ fontSize: '0.74rem', textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--c-muted)' }}>{t('orders_delivered_count')}</p>
+                <p style={{ fontSize: '1.15rem', fontWeight: 700, color: 'var(--c-cream)', lineHeight: 1.3 }}>{deliveredCount}</p>
+              </div>
+              <div style={{ border: '1px solid var(--c-border)', background: 'var(--c-surface)', borderRadius: 12, padding: '10px 12px' }}>
+                <p style={{ fontSize: '0.74rem', textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--c-muted)' }}>{t('orders_total_spent')}</p>
+                <p style={{ fontSize: '1.15rem', fontWeight: 700, color: 'var(--c-gold2)', lineHeight: 1.3 }}>{formatEUR(totalSpent)}</p>
+              </div>
+            </div>
+          )}
         </motion.div>
 
         {loading ? (
@@ -183,7 +248,7 @@ export default function OrdersPage() {
           </motion.div>
         ) : (
           <div>
-            {orders.map((order, i) => <OrderCard key={order.id} order={order} index={i} />)}
+            {orders.map((order, i) => <OrderCard key={order.id} order={order} index={i} lang={lang} />)}
           </div>
         )}
       </div>

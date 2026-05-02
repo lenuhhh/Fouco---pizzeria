@@ -7,6 +7,10 @@ import { useAuthStore } from '../store'
 import { useT } from '../lib/i18n'
 import toast from 'react-hot-toast'
 
+function isValidEmail(email) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
+}
+
 export default function AuthPage() {
   const navigate = useNavigate()
   const user = useAuthStore(s => s.user)
@@ -28,14 +32,32 @@ export default function AuthPage() {
     e.preventDefault()
     setError('')
     setNeedsEmailConfirm(false)
+
+    const name = form.name.trim()
+    const email = form.email.trim().toLowerCase()
+    const password = form.password
+
+    if (!isValidEmail(email)) {
+      setError(t('auth_err_email'))
+      return
+    }
+    if (!password || password.length < 6) {
+      setError(t('auth_err_password'))
+      return
+    }
+    if (mode === 'register' && !name) {
+      setError(t('auth_err_name_required'))
+      return
+    }
+
     setLoading(true)
 
     try {
       if (mode === 'register') {
         const { data, error } = await supabase.auth.signUp({
-          email: form.email,
-          password: form.password,
-          options: { data: { full_name: form.name } },
+          email,
+          password,
+          options: { data: { full_name: name } },
         })
         if (error) throw error
 
@@ -43,31 +65,35 @@ export default function AuthPage() {
         if (!data?.session) {
           setNeedsEmailConfirm(true)
           setMode('login')
-          setError('Confirm your email and then sign in.')
-          toast.success('Registration successful. Check your email for confirmation link.')
+          setError(t('auth_err_confirm'))
+          toast.success(t('auth_register_check_email'))
           return
         }
 
         if (data?.user) setUser(data.user)
-        toast.success(t('auth_register_btn') + '! 🔥')
+        toast.success(t('auth_register_success'))
         navigate('/profile')
       } else {
         const { data, error } = await supabase.auth.signInWithPassword({
-          email: form.email,
-          password: form.password,
+          email,
+          password,
         })
         if (error) throw error
         if (data?.user) setUser(data.user)
-        toast.success(t('nav_home') === 'Головна' ? 'З поверненням!' : 'Welcome back!')
+        toast.success(t('auth_login_success'))
         navigate('/profile')
       }
     } catch (err) {
-      const msg = err.message.includes('Invalid login') ? t('auth_err_invalid')
-        : err.message.includes('already registered') ? t('auth_err_exists')
-        : err.message.includes('Password should be') ? t('auth_err_password')
-        : err.message.toLowerCase().includes('email not confirmed') ? t('auth_err_confirm')
+      const raw = err?.message || ''
+      const normalized = raw.toLowerCase()
+      const msg = normalized.includes('invalid login') ? t('auth_err_invalid')
+        : normalized.includes('invalid credentials') ? t('auth_err_invalid')
+        : normalized.includes('already registered') ? t('auth_err_exists')
+        : normalized.includes('password should be') ? t('auth_err_password')
+        : normalized.includes('password') && normalized.includes('characters') ? t('auth_err_password')
+        : normalized.includes('email not confirmed') ? t('auth_err_confirm')
         : err.message
-      if (msg.toLowerCase().includes('email not confirmed')) {
+      if (normalized.includes('email not confirmed')) {
         setNeedsEmailConfirm(true)
       }
       setError(msg)
@@ -77,8 +103,9 @@ export default function AuthPage() {
   }
 
   async function handleResendConfirmation() {
-    if (!form.email) {
-      setError('Enter your email to resend confirmation.')
+    const email = form.email.trim().toLowerCase()
+    if (!isValidEmail(email)) {
+      setError(t('auth_err_email'))
       return
     }
 
@@ -86,31 +113,33 @@ export default function AuthPage() {
     try {
       const { error } = await supabase.auth.resend({
         type: 'signup',
-        email: form.email,
+        email,
       })
       if (error) throw error
-      toast.success('Confirmation email sent. Check your inbox.')
+      toast.success(t('auth_confirm_resent'))
     } catch (err) {
-      setError(err.message || 'Failed to resend confirmation email')
+      setError(err.message || t('auth_confirm_resend_failed'))
     } finally {
       setResendLoading(false)
     }
   }
 
   return (
-    <div style={{
+    <div className="auth-screen" style={{
       minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center',
       padding: '24px',
       background: 'radial-gradient(ellipse 60% 80% at 50% 0%, rgba(232,66,10,0.12), transparent 70%)',
+      position: 'relative', zIndex: 2,
     }}>
       <motion.div
         initial={{ opacity: 0, y: 30, scale: 0.97 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
         transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+        className="auth-shell"
         style={{ width: '100%', maxWidth: 440 }}
       >
         {/* Logo */}
-        <div style={{ textAlign: 'center', marginBottom: 40 }}>
+        <div className="auth-logo" style={{ textAlign: 'center', marginBottom: 40 }}>
           <motion.div
             animate={{ rotate: [0, -8, 8, 0] }}
             transition={{ duration: 2, repeat: Infinity, repeatDelay: 4 }}
@@ -124,10 +153,11 @@ export default function AuthPage() {
         </div>
 
         {/* Card */}
-        <div style={{
+        <div className="auth-card" style={{
           background: 'var(--c-surface)', borderRadius: 'var(--r-xl)',
           border: '1px solid var(--c-border)', padding: '40px',
           boxShadow: 'var(--shadow-card)',
+          position: 'relative', zIndex: 3,
         }}>
           {IS_DEMO && (
             <div style={{
@@ -145,7 +175,7 @@ export default function AuthPage() {
           )}
 
           {/* Tabs */}
-          <div style={{
+          <div className="auth-tabs" style={{
             display: 'flex', background: 'var(--c-bg3)', borderRadius: 50,
             padding: 4, marginBottom: 32,
           }}>
@@ -157,6 +187,7 @@ export default function AuthPage() {
                   setError('')
                   setNeedsEmailConfirm(false)
                 }}
+                className="auth-tab-btn"
                 style={{
                   flex: 1, padding: '10px', borderRadius: 50, fontSize: '0.88rem', fontWeight: 600,
                   background: mode === m ? 'linear-gradient(135deg, var(--c-fire), var(--c-fire2))' : 'transparent',
@@ -168,7 +199,7 @@ export default function AuthPage() {
             ))}
           </div>
 
-          <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+          <form className="auth-form" onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
             <AnimatePresence>
               {mode === 'register' && (
                 <motion.div
@@ -182,6 +213,7 @@ export default function AuthPage() {
                       className="input-field"
                       placeholder={t('auth_name_placeholder')}
                       value={form.name}
+                      required={mode === 'register'}
                       onChange={e => setForm(f => ({ ...f, name: e.target.value }))}
                       style={{ paddingLeft: 46 }}
                     />
@@ -269,17 +301,21 @@ export default function AuthPage() {
           {mode === 'login' && (
             <p style={{ textAlign: 'center', marginTop: 20, fontSize: '0.82rem', color: 'var(--c-muted)' }}>
               {t('auth_no_account')}{' '}
-              <span style={{ color: 'var(--c-fire2)', cursor: 'pointer', fontWeight: 600 }}
+              <button
+                type="button"
+                style={{ color: 'var(--c-fire2)', cursor: 'pointer', fontWeight: 600 }}
                 onClick={() => setMode('register')}
-              >{t('auth_create_one')}</span>
+              >{t('auth_create_one')}</button>
             </p>
           )}
           {mode === 'register' && (
             <p style={{ textAlign: 'center', marginTop: 20, fontSize: '0.82rem', color: 'var(--c-muted)' }}>
               {t('auth_have_account')}{' '}
-              <span style={{ color: 'var(--c-fire2)', cursor: 'pointer', fontWeight: 600 }}
+              <button
+                type="button"
+                style={{ color: 'var(--c-fire2)', cursor: 'pointer', fontWeight: 600 }}
                 onClick={() => setMode('login')}
-              >{t('auth_sign_in_link')}</span>
+              >{t('auth_sign_in_link')}</button>
             </p>
           )}
         </div>

@@ -77,7 +77,7 @@ export default function Layout() {
   return (
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
       {/* ── FIXED TOP SHELL: demo banner + navbar always pinned ── */}
-      <div style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 100 }}>
+      <div style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 100, pointerEvents: 'none' }}>
 
         {/* DEMO BANNER */}
         {IS_DEMO && (
@@ -88,6 +88,7 @@ export default function Layout() {
             fontSize: '0.78rem', color: 'var(--c-gold2)',
             display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
             letterSpacing: '0.04em',
+            pointerEvents: 'auto',
           }}>
             <Flame size={12} fill="currentColor" />
             DEMO MODE - connect Supabase credentials to enable real data
@@ -105,6 +106,7 @@ export default function Layout() {
             borderBottom: `1px solid ${menuOpen ? 'rgba(232,66,10,0.28)' : 'rgba(212,160,71,0.16)'}`,
             boxShadow: scrolled ? '0 12px 28px rgba(0,0,0,0.34)' : '0 8px 20px rgba(0,0,0,0.2)',
             transition: 'background 0.4s ease, box-shadow 0.4s ease, border-color 0.4s ease',
+            pointerEvents: 'auto',
           }}
           initial={{ y: IS_DEMO ? -109 : -76 }}
           animate={{ y: 0 }}
@@ -227,6 +229,11 @@ export default function Layout() {
         {/* Mobile Menu — inside fixed shell, slots naturally below nav */}
         <div
           style={{
+            position: 'absolute',
+            top: '100%',
+            left: 0,
+            right: 0,
+            zIndex: 120,
             background: 'linear-gradient(180deg, rgba(13,11,8,0.98), rgba(18,12,9,0.97))',
             backdropFilter: 'blur(10px)',
             borderBottom: '1px solid rgba(212,160,71,0.14)',

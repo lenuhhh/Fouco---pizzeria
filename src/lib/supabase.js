@@ -73,8 +73,9 @@ const mockAuth = {
     } } } }
   },
   signInWithPassword: ({ email, password }) => {
+    const normalizedEmail = (email || '').trim().toLowerCase()
     const users = getDemoUsers()
-    const user = users.find(u => u.email === email && u.password === password)
+    const user = users.find(u => u.email === normalizedEmail && u.password === password)
     if (!user) return Promise.resolve({ data: {}, error: { message: 'Invalid login credentials' } })
     const session = makeSession(user)
     saveDemoSession(session)
@@ -82,13 +83,14 @@ const mockAuth = {
     return Promise.resolve({ data: { user, session }, error: null })
   },
   signUp: ({ email, password, options }) => {
+    const normalizedEmail = (email || '').trim().toLowerCase()
     const users = getDemoUsers()
-    if (users.find(u => u.email === email)) {
+    if (users.find(u => u.email === normalizedEmail)) {
       return Promise.resolve({ data: {}, error: { message: 'User already registered' } })
     }
     const user = {
       id: 'demo_' + Date.now(),
-      email,
+      email: normalizedEmail,
       password,
       user_metadata: { full_name: options?.data?.full_name || '' },
     }

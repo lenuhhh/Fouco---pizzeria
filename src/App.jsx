@@ -90,13 +90,13 @@ export default function App() {
         }}
       />
       <Routes>
+        <Route path="/auth" element={<GuestOnlyRoute><AuthPage /></GuestOnlyRoute>} />
         <Route path="/" element={<Layout />}>
           <Route index element={<HomePage />} />
           <Route path="menu" element={<MenuPage />} />
           <Route path="cart" element={<CartPage />} />
           <Route path="orders" element={<ProtectedRoute><OrdersPage /></ProtectedRoute>} />
           <Route path="profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
-          <Route path="auth" element={<GuestOnlyRoute><AuthPage /></GuestOnlyRoute>} />
           <Route path="contacts" element={<ContactsPage />} />
           <Route path="sitemap" element={<SiteMapPage />} />
         </Route>

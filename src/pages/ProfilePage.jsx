@@ -13,6 +13,7 @@ export default function ProfilePage() {
   const t = useT()
   const [editing, setEditing] = useState(false)
   const [saving, setSaving] = useState(false)
+  const [ordersCount, setOrdersCount] = useState(0)
   const [form, setForm] = useState({
     full_name: profile?.full_name || user?.user_metadata?.full_name || '',
     phone: profile?.phone || '',
@@ -29,6 +30,18 @@ export default function ProfilePage() {
       })
     }
   }, [profile])
+
+  useEffect(() => {
+    if (!user) return
+
+    supabase
+      .from('orders')
+      .select('id', { count: 'exact', head: true })
+      .eq('user_id', user.id)
+      .then(({ count }) => {
+        setOrdersCount(count || 0)
+      })
+  }, [user])
 
   if (!user) {
     return (
@@ -111,9 +124,14 @@ export default function ProfilePage() {
               {displayName || 'New user'}
             </h2>
             <p style={{ color: 'var(--c-muted)', fontSize: '0.88rem' }}>{user.email}</p>
-            <span className="tag tag-gold" style={{ marginTop: 10, display: 'inline-flex' }}>
-              Regular guest
-            </span>
+            <div style={{ marginTop: 10, display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+              <span className="tag tag-gold" style={{ display: 'inline-flex' }}>
+                Regular guest
+              </span>
+              <span className="tag tag-fire" style={{ display: 'inline-flex' }}>
+                {t('profile_orders_count')}: {ordersCount}
+              </span>
+            </div>
           </div>
         </motion.div>
 
